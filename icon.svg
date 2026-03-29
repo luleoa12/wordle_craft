@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- 2x2 Wordle tiles -->
+  <!-- Top-left: gray -->
+  <rect x="2" y="2" width="13" height="13" rx="2" fill="#787C7E"/>
+  <!-- Top-right: yellow -->
+  <rect x="17" y="2" width="13" height="13" rx="2" fill="#C9B458"/>
+  <!-- Bottom-left: green -->
+  <rect x="2" y="17" width="13" height="13" rx="2" fill="#6AAA64"/>
+  <!-- Bottom-right: green -->
+  <rect x="17" y="17" width="13" height="13" rx="2" fill="#6AAA64"/>
+
+  <!-- Big diagonal pencil from top-right to bottom-left, overlaying center -->
+  <g transform="rotate(-45, 16, 16)">
+    <!-- Shaft -->
+    <rect x="10" y="13.5" width="16" height="5" rx="1" fill="#C68B4A"/>
+    <!-- Eraser band -->
+    <rect x="24" y="13.5" width="3" height="5" rx="0.5" fill="#B0B0B0"/>
+    <!-- Eraser tip -->
+    <rect x="26.5" y="13.5" width="2" height="5" rx="1" fill="#E8A090"/>
+    <!-- Tip taper (triangle) -->
+    <polygon points="10,13.5 10,18.5 6,16" fill="#E8D0A0"/>
+    <!-- Pencil tip (graphite) -->
+    <polygon points="6,16 7.5,14.8 7.5,17.2" fill="#555"/>
+    <!-- Wood grain line -->
+    <line x1="10" y1="16" x2="24" y2="16" stroke="#A0682A" stroke-width="0.5" opacity="0.5"/>
+  </g>
+</svg>

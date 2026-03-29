@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wordle Craft</title>
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;800;900&family=Lexend+Mega:wght@400;600;800;900&family=Public+Sans:wght@400;600;800;900&family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <div id="toastContainer" class="toast-container"></div>
+
+  <div class="app">
+
+    <!-- Header -->
+    <header>
+      <div class="header-top">
+        <div class="logo">Wordle Craft</div>
+        <div class="tagline">Design your perfect board · Find matching words</div>
+      </div>
+
+      <div class="header-mid" style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="theme-selection" style="display:flex; align-items:center; gap:16px;">
+          <span
+            style="font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 2px;">Select
+            Theme:</span>
+          <div class="theme-switcher" style="display:flex; gap:8px;">
+            <button class="theme-swatch" style="background: #ece0c2;" onclick="setTheme('beige')"
+              title="Beige"></button>
+            <button class="theme-swatch" style="background: #BAE6FD;" onclick="setTheme('blue')" title="Blue"></button>
+            <button class="theme-swatch" style="background: #BBF7D0;" onclick="setTheme('green')"
+              title="Green"></button>
+            <button class="theme-swatch" style="background: #FEF08A;" onclick="setTheme('yellow')"
+              title="Yellow"></button>
+            <button class="theme-swatch" style="background: #FED7AA;" onclick="setTheme('orange')"
+              title="Orange"></button>
+            <button class="theme-swatch" style="background: #FBCFE8;" onclick="setTheme('pink')" title="Pink"></button>
+            <button class="theme-swatch" style="background: #E9D5FF;" onclick="setTheme('purple')"
+              title="Purple"></button>
+          </div>
+        </div>
+        <button class="btn btn-ghost btn-sm"
+          style="height:32px; font-size:0.8rem; padding: 0 16px; border-radius: 99px;"
+          onclick="openModal('introModal')">HOW IT WORKS</button>
+      </div>
+    </header>
+
+    <!-- Step 1: Fetch today's answer -->
+    <div class="section" id="step1">
+      <div style="display:flex; align-items:center; gap:16px; margin-bottom: 12px;">
+        <div class="step-badge inline">01</div>
+        <div class="section-title" style="margin-bottom:0;">Today's Target</div>
+      </div>
+      <div class="section-desc">Start with today's Wordle answer, or enter your own 5-letter word.</div>
+
+      <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:flex-start;">
+        <button class="btn btn-primary" id="fetchBtn" onclick="fetchTodaysWord()">
+          <span id="fetchIcon"></span> Fetch Today's Word
+        </button>
+        <span class="or-divider">OR</span>
+        <div class="custom-input-group">
+          <input id="customWord" class="custom-input" placeholder="CRANE" maxlength="5"
+            oninput="handleCustomWord(this)">
+          <button class="btn btn-ghost" id="applyBtn" onclick="applyCustomWord()">Apply</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step 2: Design the board -->
+    <div class="section disabled" id="step2">
+      <div style="display:flex; align-items:center; gap:16px; margin-bottom: 12px;">
+        <div class="step-badge inline">02</div>
+        <div class="section-title" style="margin-bottom:0;">Design Your Pattern</div>
+      </div>
+      <div class="section-desc">Click tiles to paint a pattern. We'll find real words that match.</div>
+
+      <div
+        style="display:flex; align-items:stretch; justify-content:flex-start; gap:72px; flex-wrap:nowrap; margin:32px 0;">
+        <div class="grid-builder" id="gridBuilder" style="margin:0;"></div>
+
+        <div class="grid-legend">
+          <div class="legend-title" style="color: var(--text-main); margin-top: 4px; margin-bottom: -2px;">Paint Guide</div>
+
+          <div class="legend-items">
+            <div class="legend-row">
+              <div class="color-swatch" style="background: #787c7e;"></div>
+              <span class="legend-label">Gray</span>
+            </div>
+            <div class="legend-row">
+              <div class="color-swatch" style="background: #c9b458;"></div>
+              <span class="legend-label">Yellow</span>
+            </div>
+            <div class="legend-row">
+              <div class="color-swatch" style="background: #6aaa64;"></div>
+              <span class="legend-label">Green</span>
+            </div>
+          </div>
+
+          <div class="legend-divider"></div>
+
+          <div class="legend-title" style="color: var(--text-main); margin-top: 2px; margin-bottom: -2px;">Instructions</div>
+
+          <div class="instruction-list">
+            <div class="instruction-item">
+              <div class="instruction-header">
+                <div class="instruction-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                  </svg>
+                </div>
+                <div class="instruction-title">Click a tile</div>
+              </div>
+              <div class="instruction-desc">
+                <span>Rotates color: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span> 
+                <span>gray → yellow → green</span>
+              </div>
+            </div>
+
+            <div class="instruction-item">
+              <div class="instruction-header">
+                <div class="instruction-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M16 3h5v5"></path>
+                    <path d="M4 20L21 3"></path>
+                    <path d="M21 16v5h-5"></path>
+                    <path d="M15 15l6 6"></path>
+                    <path d="M4 4l5 5"></path>
+                  </svg>
+                </div>
+                <div class="instruction-title">Shuffle</div>
+              </div>
+              <div class="instruction-desc">Randomly reassigns all tile colors</div>
+            </div>
+
+            <div class="instruction-item">
+              <div class="instruction-header">
+                <div class="instruction-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                    <path d="M3 3v5h5"></path>
+                    <path d="M12 7v5l4 2"></path>
+                  </svg>
+                </div>
+                <div class="instruction-title">Reset tiles</div>
+              </div>
+              <div class="instruction-desc">Clears all colors back to gray</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        style="display:flex; justify-content:center; align-items:center; margin-top: 32px; gap:22.7px; flex-wrap:nowrap;">
+        <button class="btn btn-ghost" onclick="goToStep(1)">Change Word</button>
+        <button class="btn btn-ghost" onclick="randomizeBoard()">Shuffle</button>
+        <button class="btn btn-ghost" onclick="resetGrid()">Reset Tiles</button>
+        <button class="btn btn-primary" id="generateBtn" onclick="findWords()">Find Words →</button>
+      </div>
+    </div>
+
+    <!-- Step 3: Share -->
+    <div class="section disabled" id="step3">
+      <div style="display:flex; align-items:center; gap:16px; margin-bottom: 12px;">
+        <div class="step-badge inline">03</div>
+        <div class="section-title" style="margin-bottom:0;">Your Word List</div>
+      </div>
+      <div class="section-desc">Here are the exact words you need to sequentially type into Wordle, row by row, to
+        recreate your crafted pattern entirely legally!</div>
+
+      <div id="wordListContainer" style="margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px;"></div>
+
+      <div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-top:24px; gap:16px;">
+        <button class="btn btn-ghost" onclick="goToStep(2)">Edit Board</button>
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <button class="btn btn-ghost" onclick="location.reload()">Start Over</button>
+        </div>
+      </div>
+    </div>
+  </div> 
+
+  <div id="introModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content section" style="max-width: 400px; padding: 24px;">
+      <div class="step-badge intro-badge">?</div>
+
+      <div style="text-align: left;">
+        <div
+          style="font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px;">
+          Word Game Designer</div>
+        <div class="section-title" style="font-size: 1.5rem; margin-bottom: 12px;">Wordle Craft</div>
+        <div class="section-desc" style="font-size: 0.85rem; margin-bottom: 24px; line-height: 1.5;">Craft a custom
+          board and bring it to life in the real game.</div>
+
+        <div class="intro-cards" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px;">
+          <div class="intro-card">
+            <div class="card-badge">01</div>
+            <div>
+              <div class="card-title">Set your target</div>
+              <div class="card-text">Fetch today's answer or enter a custom word</div>
+            </div>
+          </div>
+          <div class="intro-card">
+            <div class="card-badge">02</div>
+            <div>
+              <div class="card-title">Paint the grid</div>
+              <div class="card-text">Click tiles to assign green, yellow, or gray colors</div>
+            </div>
+          </div>
+          <div class="intro-card">
+            <div class="card-badge">03</div>
+            <div>
+              <div class="card-title">Generate words</div>
+              <div class="card-text">We find valid dictionary words that match your pattern</div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" style="width: 100%; height: 44px; font-size: 1rem; margin-bottom: 12px;"
+          onclick="closeIntro()">
+          Start designing
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="impossibleModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content section">
+      <div class="section-title" style="font-size: 2rem;">Impossible Pattern</div>
+      <div class="section-desc" style="margin-bottom: 24px;">No real dictionary word produces this exact color sequence
+        against the target.</div>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <button class="btn btn-primary" onclick="handleRepaint()">Repaint</button>
+        <button class="btn btn-ghost" onclick="handleContinueAnyway()">Continue Anyway</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

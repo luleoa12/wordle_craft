@@ -360,6 +360,47 @@ function generateShare() {
   }
 }
 
+async function generateEmojiShare() {
+  const emojiMap = {
+    'gray': '⬛',
+    'yellow': '🟨',
+    'green': '🟩'
+  };
+  
+  let emojiPattern = '';
+  for (let r = 0; r < ROWS; r++) {
+    const row = state.grid[r];
+    const rowEmojis = row.map(c => emojiMap[c.color] || '⬛').join('');
+    emojiPattern += rowEmojis + '\n';
+  }
+  
+  const shareText = `${emojiPattern}`;
+  
+  // Copy to clipboard
+  let success = false;
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(shareText);
+      success = true;
+    } else {
+      const textArea = document.createElement("textarea");
+      textArea.value = shareText;
+      document.body.appendChild(textArea);
+      textArea.select();
+      success = document.execCommand('copy');
+      document.body.removeChild(textArea);
+    }
+    
+    if (success) {
+      showToast('toastContainer', 'ok', 'Emoji pattern copied to clipboard!');
+    } else {
+      throw new Error('Copy failed');
+    }
+  } catch (e) {
+    showToast('toastContainer', 'error', 'Failed to copy emoji pattern.');
+  }
+}
+
 // Toasts 
 function showToast(id, type, msg) {
   const container = document.getElementById('toastContainer');

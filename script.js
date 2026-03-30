@@ -244,15 +244,51 @@ function resetGrid() {
   document.getElementById('step3').classList.add('disabled');
 }
 
+// Shuffle board with valid patterns
 function randomizeBoard() {
   if (!state.answer) { showToast('toastContainer', 'warn', 'Set target first.'); return; }
-  const colors = ['gray', 'gray', 'yellow', 'green'];
+  if (WORD_LIST.length === 0) { showToast('toastContainer', 'error', 'Word list not loaded yet.'); return; }
+  
+  const answer = state.answer.toUpperCase();
+  const colors = ['gray', 'yellow', 'green'];
+  
   for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      const color = colors[Math.floor(Math.random() * colors.length)];
-      state.grid[r][c] = { letter: '', color };
+    let validPatternFound = false;
+    let attempts = 0;
+    const maxAttempts = 100;
+    
+    while (!validPatternFound && attempts < maxAttempts) {
+      attempts++;
+      
+      // Generate a random pattern
+      const desiredPattern = [];
+      for (let c = 0; c < COLS; c++) {
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        desiredPattern.push(color);
+      }
+      
+      // Check if this pattern has valid words
+      const validWords = WORD_LIST.filter(word => {
+        const actualPattern = scoreGuess(word.toUpperCase(), answer);
+        return patternMatches(actualPattern, desiredPattern);
+      });
+      
+      if (validWords.length > 0) {
+        for (let c = 0; c < COLS; c++) {
+          state.grid[r][c] = { letter: '', color: desiredPattern[c] };
+        }
+        validPatternFound = true;
+      }
+    }
+    
+    // Fallback: if no valid pattern found after many attempts, use all gray
+    if (!validPatternFound) {
+      for (let c = 0; c < COLS; c++) {
+        state.grid[r][c] = { letter: '', color: 'gray' };
+      }
     }
   }
+  
   renderGrid();
   showToast('toastContainer', 'info', 'Board randomly generated!');
   document.getElementById('step3').classList.add('disabled');

@@ -11,7 +11,7 @@ Paint any pattern. Get the exact words to play it out.
 
 <table>
 <tr>
-<td valign="top" width="67%">
+<td valign="top" width="68%">
 
 ## How it works
 
@@ -35,9 +35,9 @@ Wordle Craft walks you through three steps:
 
 
 </td>
-<td valign="top" width="33%">
+<td valign="top" width="32%">
 
-<img src="images/graphic.svg" width="100%" alt="Wordle Craft full flow">
+<img src="images/graphic.svg" width="450" alt="Wordle Craft full flow">
 
 
 </td>

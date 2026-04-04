@@ -7,26 +7,24 @@
 
 ## What is this?
 
-Ever seen a perfect Wordle grid and wondered how to recreate it?
-Wordle Craft lets you design any pattern, then generates real, valid guesses that produce it exactly in Wordle.
-
-Paint your grid → get the words → play it out.
+Most Wordle grids are luck. This one is yours to design.
+Paint any pattern. Wordle Craft finds the real words to make it happen.
 
 ---
 
 <table>
 <tr>
-<td valign="top" width="50%">
+<td valign="top" width="70%">
 
 ## How it works
 
 Wordle Craft walks you through three steps:
 
-1. **Set a target** — fetch today's Wordle answer or enter your own 5-letter word
-2. **Paint a pattern** — click tiles to cycle through gray, yellow, and green
-3. **Get your words** — the app finds 6 real dictionary words that reproduce your exact pattern
+1. **Set a target** — fetch today's Wordle answer or enter a custom word
+2. **Paint a pattern** — click tiles to assign green, yellow, or gray colors
+3. **Get your words** — the app finds valid dictionary words that match your pattern
 
-**Example output** for target word `SANDY`:
+**Example output** for target word `SANDY`: 
 
 <img src="images/wordle.png" width="200" alt="Example result grid">
 
@@ -38,23 +36,34 @@ Wordle Craft walks you through three steps:
 - 📖 **Dictionary-validated** — every suggestion is a real, playable Wordle guess
 - ⚡ **No backend** — runs entirely in the browser, zero latency
 
-</td>
-<td valign="top" width="32%">
 
-<img src="images/graphic.svg" width="200" alt="Wordle Craft full flow">
+</td>
+<td valign="top" width="30%">
+
+<img src="images/graphic.svg" width="350" alt="Wordle Craft full flow">
 
 
 </td>
 </tr>
 </table>
 
----
-
-
+--- 
 
 ## Contributing
- 
-Bug reports and word-list improvements are welcome. Open an issue or send a pull request.
- 
+
+Bug reports and pull requests are all welcome.
+
+**Reporting a bug** — open an [issue](https://github.com/luleoa12/wordle_craft/issues) and include steps to reproduce, your browser, and a screenshot if relevant.
+
+**Submitting a pull request:**
+```bash
+git checkout -b my-feature
+# make your changes
+git commit -m "describe what changed"
+git push origin my-feature
+```
+Then open a PR with a short description of what you changed and why.
+
+
 
  

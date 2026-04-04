@@ -26,7 +26,7 @@ Wordle Craft walks you through three steps:
 
 **Example output** for target word `SANDY`: 
 
-<img src="images/wordle.png" width="180" alt="Example result grid">
+<img src="images/wordle.png" width="157" alt="Example result grid">
 
 ## Features
 
@@ -40,7 +40,7 @@ Wordle Craft walks you through three steps:
 </td>
 <td valign="top" width="34%">
 
-<img src="images/graphic.svg" width="450" alt="Wordle Craft full flow">
+<img src="images/graphic.svg" width="100%" alt="Wordle Craft full flow">
 
 
 </td>

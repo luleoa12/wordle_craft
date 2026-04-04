@@ -1,20 +1,17 @@
 
 
-![Wordle Craft logo](images/logo.svg)
-
-> Design your perfect board · Find matching words
-
+<img src="images/logo.svg" width="600" alt="Wordle Craft">
 
 ## What is this?
 
-Most Wordle grids are luck. This one is yours to design.
-Paint any pattern. Wordle Craft finds the real words to make it happen.
+Most Wordle grids are luck. This one is designed.
+Paint any pattern. Get the exact words to play it out.
 
 ---
 
 <table>
 <tr>
-<td valign="top" width="66%">
+<td valign="top" width="67%">
 
 ## How it works
 
@@ -22,7 +19,7 @@ Wordle Craft walks you through three steps:
 
 1. **Set a target** — fetch today's Wordle answer or enter a custom word
 2. **Paint a pattern** — click tiles to assign green, yellow, or gray colors
-3. **Get your words** — the app finds valid dictionary words that match your pattern
+3. **Get your words** — the app finds valid words that match your pattern
 
 **Example output** for target word `SANDY`: 
 
@@ -38,7 +35,7 @@ Wordle Craft walks you through three steps:
 
 
 </td>
-<td valign="top" width="34%">
+<td valign="top" width="33%">
 
 <img src="images/graphic.svg" width="100%" alt="Wordle Craft full flow">
 

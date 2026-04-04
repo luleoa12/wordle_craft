@@ -29,7 +29,7 @@ function initGrid() {
   for (let r = 0; r < ROWS; r++) {
     state.grid.push([]);
     for (let c = 0; c < COLS; c++) {
-      state.grid[r].push({ letter: '', color: 'gray' });
+      state.grid[r].push({ letter: '', color: 'gray', clicked: false });
     }
   }
   renderGrid();
@@ -41,8 +41,7 @@ function getGridHTML(interactive) {
     html += `<div class="grid-row-wrap"><div class="grid-row">`;
     for (let c = 0; c < COLS; c++) {
       const cell = state.grid[r][c];
-      const val = cell.letter;
-      const clsStr = `tile tile-${cell.color}`;
+      const clsStr = `tile tile-${cell.color} ${cell.clicked ? 'tile-clicked' : ''}`;
 
       let clickAttr = '';
       if (interactive) {
@@ -69,16 +68,17 @@ function cycleTile(r, c) {
   const idx = CYCLE.indexOf(cell.color);
   cell.color = CYCLE[(idx + 1) % CYCLE.length];
   cell.letter = '';
+  cell.clicked = true;
 
   const tileEdit = document.getElementById(`tile-edit-${r}-${c}`);
   if (tileEdit) {
-    tileEdit.className = `tile tile-${cell.color}`;
+    tileEdit.className = `tile tile-${cell.color} tile-clicked`;
     tileEdit.textContent = '';
   }
 
   const tilePrev = document.getElementById(`tile-prev-${r}-${c}`);
   if (tilePrev) {
-    tilePrev.className = `tile tile-${cell.color}`;
+    tilePrev.className = `tile tile-${cell.color} tile-clicked`;
     tilePrev.textContent = '';
   }
 
@@ -244,35 +244,113 @@ function resetGrid() {
   document.getElementById('step3').classList.add('disabled');
 }
 
+function shuffleColors(color1, color2) {
+  if (!state.answer) { showToast('toastContainer', 'warn', 'Set target first.'); return; }
+
+  const positions1 = [];
+  const positions2 = [];
+
+  // Collect positions of each color
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const color = state.grid[r][c].color;
+      if (color === color1) {
+        positions1.push({ r, c });
+      } else if (color === color2) {
+        positions2.push({ r, c });
+      }
+    }
+  }
+
+  // If no tiles of either color, do nothing
+  if (positions1.length === 0 && positions2.length === 0) {
+    showToast('toastContainer', 'warn', `No ${color1} or ${color2} tiles to shuffle!`);
+    return;
+  }
+
+  // Create a copy of the current grid
+  const newGrid = JSON.parse(JSON.stringify(state.grid));
+
+  // Shuffle tiles within each color group separately
+  const shuffleArray = (arr) => arr.sort(() => Math.random() - 0.5);
+
+  // Shuffle color1 tiles among themselves
+  if (positions1.length > 1) {
+    const shuffled1 = shuffleArray([...positions1]);
+    const tiles1 = positions1.map(pos => newGrid[pos.r][pos.c]);
+
+    for (let i = 0; i < shuffled1.length; i++) {
+      const newPos = shuffled1[i];
+      newGrid[newPos.r][newPos.c] = tiles1[i];
+    }
+  }
+
+  // Shuffle color2 tiles among themselves
+  if (positions2.length > 1) {
+    const shuffled2 = shuffleArray([...positions2]);
+    const tiles2 = positions2.map(pos => newGrid[pos.r][pos.c]);
+
+    for (let i = 0; i < shuffled2.length; i++) {
+      const newPos = shuffled2[i];
+      newGrid[newPos.r][newPos.c] = tiles2[i];
+    }
+  }
+
+  state.grid = newGrid;
+  renderGrid();
+  showToast('toastContainer', 'info', `Shuffled ${color1} and ${color2} tiles within their positions!`);
+  document.getElementById('step3').classList.add('disabled');
+}
+
+function shuffleGrayYellow() {
+  shuffleColors('gray', 'yellow');
+}
+
+function shuffleGrayGreen() {
+  shuffleColors('gray', 'green');
+}
+
+function shuffleYellowGreen() {
+  shuffleColors('yellow', 'green');
+}
+
+function shuffleAll() {
+  shuffleColors('gray', 'yellow');
+  // Need to call again for full randomization
+  setTimeout(() => {
+    shuffleColors('gray', 'green');
+  }, 100);
+}
+
 // Shuffle board with valid patterns
 function randomizeBoard() {
   if (!state.answer) { showToast('toastContainer', 'warn', 'Set target first.'); return; }
   if (WORD_LIST.length === 0) { showToast('toastContainer', 'error', 'Word list not loaded yet.'); return; }
-  
+
   const answer = state.answer.toUpperCase();
   const colors = ['gray', 'yellow', 'green'];
-  
+
   for (let r = 0; r < ROWS; r++) {
     let validPatternFound = false;
     let attempts = 0;
     const maxAttempts = 100;
-    
+
     while (!validPatternFound && attempts < maxAttempts) {
       attempts++;
-      
+
       // Generate a random pattern
       const desiredPattern = [];
       for (let c = 0; c < COLS; c++) {
         const color = colors[Math.floor(Math.random() * colors.length)];
         desiredPattern.push(color);
       }
-      
+
       // Check if this pattern has valid words
       const validWords = WORD_LIST.filter(word => {
         const actualPattern = scoreGuess(word.toUpperCase(), answer);
         return patternMatches(actualPattern, desiredPattern);
       });
-      
+
       if (validWords.length > 0) {
         for (let c = 0; c < COLS; c++) {
           state.grid[r][c] = { letter: '', color: desiredPattern[c] };
@@ -280,7 +358,7 @@ function randomizeBoard() {
         validPatternFound = true;
       }
     }
-    
+
     // Fallback: if no valid pattern found after many attempts, use all gray
     if (!validPatternFound) {
       for (let c = 0; c < COLS; c++) {
@@ -288,7 +366,7 @@ function randomizeBoard() {
       }
     }
   }
-  
+
   renderGrid();
   showToast('toastContainer', 'info', 'Board randomly generated!');
   document.getElementById('step3').classList.add('disabled');
@@ -366,16 +444,16 @@ async function generateEmojiShare() {
     'yellow': '🟨',
     'green': '🟩'
   };
-  
+
   let emojiPattern = '';
   for (let r = 0; r < ROWS; r++) {
     const row = state.grid[r];
     const rowEmojis = row.map(c => emojiMap[c.color] || '⬛').join('');
     emojiPattern += rowEmojis + '\n';
   }
-  
+
   const shareText = `${emojiPattern}`;
-  
+
   // Copy to clipboard
   let success = false;
   try {
@@ -390,7 +468,7 @@ async function generateEmojiShare() {
       success = document.execCommand('copy');
       document.body.removeChild(textArea);
     }
-    
+
     if (success) {
       showToast('toastContainer', 'ok', 'Emoji pattern copied to clipboard!');
     } else {
@@ -459,8 +537,12 @@ function goToStep(n) {
 }
 
 function openModal(id) {
+  console.log('openModal called with id:', id);
   const modal = document.getElementById(id);
-  if (!modal) return;
+  if (!modal) {
+    console.log('Modal not found with id:', id);
+    return;
+  }
   modal.style.display = 'flex';
   document.body.classList.add('modal-open');
 
@@ -473,6 +555,223 @@ function closeModal(id) {
   if (!modal) return;
   modal.style.display = 'none';
   document.body.classList.remove('modal-open');
+}
+
+function openShuffleModal() {
+  console.log('openShuffleModal called');
+  openModal('shuffleModal');
+  updateShuffleUI();
+}
+
+function updateShuffleUI() {
+  const colors = ['Gray', 'Yellow', 'Green'];
+  colors.forEach(color => {
+    const isChecked = document.getElementById(`shuffle${color}`).checked;
+    const card = document.getElementById(`card${color}`);
+    
+    if (card) {
+      if (isChecked) {
+        card.classList.add('active');
+      } else {
+        card.classList.remove('active');
+      }
+    }
+  });
+
+  const patternToggle = document.getElementById('validPatternToggle');
+  const patternCard = document.querySelector('.pattern-card');
+  if (patternToggle && patternCard) {
+    if (patternToggle.checked) {
+      patternCard.classList.add('active');
+    } else {
+      patternCard.classList.remove('active');
+    }
+  }
+}
+
+function shuffleTiles() {
+
+  if (!state.answer) {
+    showToast('toastContainer', 'warn', 'Set target first.');
+    return;
+  }
+
+  const shuffleGray = document.getElementById('shuffleGray').checked;
+  const shuffleYellow = document.getElementById('shuffleYellow').checked;
+  const shuffleGreen = document.getElementById('shuffleGreen').checked;
+  const validPatternToggle = document.getElementById('validPatternToggle').checked;
+
+  if (validPatternToggle) {
+    generateValidPattern();
+    return;
+  }
+
+  const shuffleColorPool = [];
+  if (shuffleGray) shuffleColorPool.push('gray');
+  if (shuffleYellow) shuffleColorPool.push('yellow');
+  if (shuffleGreen) shuffleColorPool.push('green');
+
+  console.log('Shuffle color pool:', shuffleColorPool);
+
+  if (shuffleColorPool.length === 0) {
+    showToast('toastContainer', 'warn', 'No colors selected for shuffling!');
+    return;
+  }
+
+  const newGrid = JSON.parse(JSON.stringify(state.grid));
+
+  let tilesToShuffle = [];
+  const anyClicked = state.grid.some(row => row.some(cell => cell.clicked));
+
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const cell = state.grid[r][c];
+      
+      if (anyClicked) {
+        if (cell.clicked && shuffleColorPool.includes(cell.color)) {
+          tilesToShuffle.push({ r, c });
+        }
+      } else {
+        if (shuffleColorPool.includes(cell.color)) {
+          tilesToShuffle.push({ r, c });
+        }
+      }
+    }
+  }
+
+  if (tilesToShuffle.length === 0) {
+    showToast('toastContainer', 'warn', 'No clicked tiles match the selected colors!');
+    return;
+  }
+
+  // Shuffle: assign a random color from the shuffle pool to eligible tiles
+  for (const tile of tilesToShuffle) {
+    const randomColor = shuffleColorPool[Math.floor(Math.random() * shuffleColorPool.length)];
+    newGrid[tile.r][tile.c].color = randomColor;
+    // Keep it as "clicked" since the user initiated this shuffle
+  }
+
+  console.log('Grid before shuffle:', state.grid.map(row => row.map(cell => cell.color)));
+  console.log('Grid after shuffle:', newGrid.map(row => row.map(cell => cell.color)));
+
+  state.grid = newGrid;
+
+  // Force a complete re-render
+  setTimeout(() => {
+    renderGrid();
+    showToast('toastContainer', 'info', 'Colors shuffled successfully!');
+    document.getElementById('step3').classList.add('disabled');
+  }, 50);
+}
+
+// Shuffle board with valid patterns
+function generateValidPattern() {
+  if (!state.answer) {
+    showToast('toastContainer', 'warn', 'Set target first.');
+    return;
+  }
+  if (WORD_LIST.length === 0) {
+    showToast('toastContainer', 'error', 'Word list not loaded yet.');
+    return;
+  }
+
+  const answer = state.answer.toUpperCase();
+  const shuffleGray = document.getElementById('shuffleGray').checked;
+  const shuffleYellow = document.getElementById('shuffleYellow').checked;
+  const shuffleGreen = document.getElementById('shuffleGreen').checked;
+  
+  const shuffleColorPool = [];
+  if (shuffleGray) shuffleColorPool.push('gray');
+  if (shuffleYellow) shuffleColorPool.push('yellow');
+  if (shuffleGreen) shuffleColorPool.push('green');
+
+  if (shuffleColorPool.length === 0) {
+    showToast('toastContainer', 'warn', 'Select at least one color to randomize!');
+    return;
+  }
+
+  let impossibleRows = [];
+  
+  for (let r = 0; r < ROWS; r++) {
+    const row = state.grid[r];
+    const rowHasClicked = row.some(c => c.clicked);
+    const stayingConstraints = []; // {col, color}
+    
+    for (let c = 0; c < COLS; c++) {
+      let stays = false;
+      if (rowHasClicked) {
+        if (!row[c].clicked || !shuffleColorPool.includes(row[c].color)) {
+          stays = true;
+        }
+      } else {
+        if (!shuffleColorPool.includes(row[c].color)) {
+          stays = true;
+        }
+      }
+
+      if (stays) {
+        stayingConstraints.push({ c, color: row[c].color });
+      }
+    }
+
+    const matchingWords = WORD_LIST.filter(word => {
+      const actualPattern = scoreGuess(word.toUpperCase(), answer);
+      
+      const matchesConstraints = stayingConstraints.every(con => actualPattern[con.c] === con.color);
+      if (!matchesConstraints) return false;
+
+      for (let c = 0; c < COLS; c++) {
+        let canShuffle = false;
+        if (rowHasClicked) {
+          if (row[c].clicked && shuffleColorPool.includes(row[c].color)) canShuffle = true;
+        } else {
+          if (shuffleColorPool.includes(row[c].color)) canShuffle = true;
+        }
+
+        if (canShuffle) {
+          if (!shuffleColorPool.includes(actualPattern[c])) return false;
+        }
+      }
+
+      return true;
+    });
+
+    if (matchingWords.length > 0) {
+      const interestingWords = matchingWords.filter(word => {
+        const p = scoreGuess(word.toUpperCase(), answer);
+        return p.some(color => color !== 'gray');
+      });
+      
+      const pool = interestingWords.length > 0 ? interestingWords : matchingWords;
+      const chosenWord = pool[Math.floor(Math.random() * pool.length)];
+      const newPattern = scoreGuess(chosenWord.toUpperCase(), answer);
+      
+      for (let c = 0; c < COLS; c++) {
+        let canShuffle = false;
+        if (rowHasClicked) {
+          if (row[c].clicked && shuffleColorPool.includes(row[c].color)) canShuffle = true;
+        } else {
+          if (shuffleColorPool.includes(row[c].color)) canShuffle = true;
+        }
+
+        if (canShuffle) {
+          state.grid[r][c].color = newPattern[c];
+          state.grid[r][c].clicked = true; 
+        }
+      }
+    } else {
+      impossibleRows.push(r + 1);
+    }
+  }
+
+  renderGrid();
+  
+  if (impossibleRows.length > 0) {
+    showToast('toastContainer', 'error', `IMPOSSIBLE PATTERN: No real words match constraints for row(s) ${impossibleRows.join(', ')}.`);
+  } else {
+    showToast('toastContainer', 'ok', 'Real Wordle patterns generated!');
+  }
+  document.getElementById('step3').classList.add('disabled');
 }
 
 function closeIntro() {
@@ -494,12 +793,12 @@ document.addEventListener('keydown', (e) => {
   const first = focusable[0];
   const last = focusable[focusable.length - 1];
 
-  if (e.shiftKey) { 
+  if (e.shiftKey) {
     if (document.activeElement === first) {
       last.focus();
       e.preventDefault();
     }
-  } else { 
+  } else {
     if (document.activeElement === last) {
       first.focus();
       e.preventDefault();

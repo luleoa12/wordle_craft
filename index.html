@@ -249,6 +249,18 @@
     </div>
   </div>
 
+  <div id="solvedErrorModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content section">
+      <div class="section-title" style="font-size: 2rem;">Game Ends Early</div>
+      <div class="section-desc" style="margin-bottom: 24px;">Row <span id="solvedRowNumber"></span> is all green, which
+        solves the Wordle! In a real game, you can't have any more guesses after it's solved.</div>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <button class="btn btn-primary" onclick="handleRepaint()">Repaint</button>
+        <button class="btn btn-ghost" onclick="handleContinueAnyway()">Continue Anyway</button>
+      </div>
+    </div>
+  </div>
+
   <div id="shuffleModal" class="modal-overlay" style="display: none;">
     <div class="modal-content shuffle-modal-content">
       <button class="modal-close-btn" onclick="closeModal('shuffleModal')">

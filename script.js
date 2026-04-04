@@ -185,6 +185,33 @@ function findWords() {
   const resultsByRow = [];
   window._impossibleRows = [];
 
+  // 1. Check for solved row (all green)
+  let firstAllGreenIdx = -1;
+  for (let r = 0; r < ROWS; r++) {
+    const isAllGreen = state.grid[r].every(c => c.color === 'green');
+    if (isAllGreen) {
+      firstAllGreenIdx = r;
+      break;
+    }
+  }
+
+  // 2. If solved early, ensure no guesses exist below it
+  if (firstAllGreenIdx !== -1 && firstAllGreenIdx < ROWS - 1) {
+    let hasGuessesBelow = false;
+    for (let r = firstAllGreenIdx + 1; r < ROWS; r++) {
+      if (state.grid[r].some(c => c.clicked || c.color !== 'gray')) {
+        hasGuessesBelow = true;
+        break;
+      }
+    }
+
+    if (hasGuessesBelow) {
+      document.getElementById('solvedRowNumber').textContent = (firstAllGreenIdx + 1).toString();
+      openModal('solvedErrorModal');
+      return;
+    }
+  }
+
   for (let r = 0; r < ROWS; r++) {
     const desiredPattern = state.grid[r].map(c => c.color);
 
@@ -223,6 +250,7 @@ function findWords() {
 
 function handleRepaint() {
   closeModal('impossibleModal');
+  closeModal('solvedErrorModal');
   window._impossibleRows.forEach(r => {
     for (let c = 0; c < COLS; c++) {
       const t = document.getElementById(`tile-edit-${r}-${c}`);
@@ -234,6 +262,7 @@ function handleRepaint() {
 
 function handleContinueAnyway() {
   closeModal('impossibleModal');
+  closeModal('solvedErrorModal');
   generateShare();
   goToStep(3);
 }

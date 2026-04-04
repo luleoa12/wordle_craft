@@ -14,7 +14,7 @@ Paint any pattern. Wordle Craft finds the real words to make it happen.
 
 <table>
 <tr>
-<td valign="top" width="70%">
+<td valign="top" width="66%">
 
 ## How it works
 
@@ -26,21 +26,21 @@ Wordle Craft walks you through three steps:
 
 **Example output** for target word `SANDY`: 
 
-<img src="images/wordle.png" width="200" alt="Example result grid">
+<img src="images/wordle.png" width="180" alt="Example result grid">
 
 ## Features
 
 - 🎨 **7 themes** — swap color palettes to match your style
 - 🔀 **Shuffle** — randomly repaint the grid for inspiration
 - 📋 **One-click copy** — copy each word individually to clipboard
-- 📖 **Dictionary-validated** — every suggestion is a real, playable Wordle guess
+- 📖 **Real words only** — every suggestion is a valid Wordle guess
 - ⚡ **No backend** — runs entirely in the browser, zero latency
 
 
 </td>
-<td valign="top" width="30%">
+<td valign="top" width="34%">
 
-<img src="images/graphic.svg" width="350" alt="Wordle Craft full flow">
+<img src="images/graphic.svg" width="450" alt="Wordle Craft full flow">
 
 
 </td>

@@ -7,33 +7,54 @@
 
 ## What is this?
 
-You've seen those beautiful Wordle result grids people share — the perfect zig-zag of yellows, the satisfying wall of greens. **Wordle Craft** lets you design one from scratch, then hands you the exact valid words to type in-game to produce it.
+Ever seen a perfect Wordle grid and wondered how to recreate it?
+Wordle Craft lets you design any pattern, then generates real, valid guesses that produce it exactly in Wordle.
 
-Paint any pattern → get a real word list → play it out in Wordle.
+Paint your grid → get the words → play it out.
 
 ---
+
+<table>
+<tr>
+<td valign="top" width="50%">
 
 ## How it works
-```
-┌─────────────────────┐    ┌─────────────────────┐    ┌─────────────────────┐
-│  01. Today's Target │ →  │  02. Design Pattern │ →  │  03. Your Word List │
-│                     │    │                     │    │                     │
-│  Use today's Wordle │    │  Click tiles to     │    │  6 valid words that │
-│  answer or enter    │    │  paint green,       │    │  produce your exact │
-│  your own word      │    │  yellow, or gray    │    │  pattern in Wordle  │
-└─────────────────────┘    └─────────────────────┘    └─────────────────────┘
-```
 
-The logic is simple: given a target word and a color pattern for each row, the app finds a valid dictionary word whose letter-match against the target produces exactly that color output — for all 6 rows.
+Wordle Craft walks you through three steps:
 
----
+1. **Set a target** — fetch today's Wordle answer or enter your own 5-letter word
+2. **Paint a pattern** — click tiles to cycle through gray, yellow, and green
+3. **Get your words** — the app finds 6 real dictionary words that reproduce your exact pattern
+
+**Example output** for target word `SANDY`:
+
+<img src="images/wordle.png" width="200" alt="Example result grid">
 
 ## Features
 
-| Feature | Description |
-|---|---|
-| 🎨 **7 themes** | Swap color palettes to match your vibe |
-| 🔀 **Shuffle** | Randomly repaint the grid for inspiration |
-| 📋 **One-click copy** | Copy each word individually to clipboard |
-| 📖 **Dictionary-valid** | Every word is a real, playable Wordle guess |
-| ⚡ **No backend** | Runs entirely in the browser, zero latency |
+- 🎨 **7 themes** — swap color palettes to match your style
+- 🔀 **Shuffle** — randomly repaint the grid for inspiration
+- 📋 **One-click copy** — copy each word individually to clipboard
+- 📖 **Dictionary-validated** — every suggestion is a real, playable Wordle guess
+- ⚡ **No backend** — runs entirely in the browser, zero latency
+
+</td>
+<td valign="top" width="32%">
+
+<img src="images/graphic.svg" width="200" alt="Wordle Craft full flow">
+
+
+</td>
+</tr>
+</table>
+
+---
+
+
+
+## Contributing
+ 
+Bug reports and word-list improvements are welcome. Open an issue or send a pull request.
+ 
+
+ 

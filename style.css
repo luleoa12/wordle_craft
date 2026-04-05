@@ -1083,3 +1083,45 @@ body.modal-open {
   font-size: 0.9rem;
   margin-left: auto;
 }
+
+/* Header Action Styles */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.github-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid var(--border-main);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 4px 4px 0px var(--border-main);
+  transition: all 0.1s;
+  color: var(--text-main);
+  text-decoration: none;
+  position: relative;
+}
+
+.github-btn svg {
+  width: 16px;
+  height: 16px;
+  transform: translateY(-0.5px);
+}
+
+.github-btn:hover {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0px var(--border-main);
+  background: var(--bg-main);
+}
+
+.github-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px var(--border-main);
+}

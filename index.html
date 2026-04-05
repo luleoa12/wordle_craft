@@ -21,16 +21,23 @@
     <!-- Header -->
     <header>
       <div class="header-top">
-        <div class="logo">Wordle Craft</div>
+        <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+          <div class="logo">Wordle Craft</div>
+          <div class="github-container desktop-hide">
+            <a href="https://github.com/luleoa12/wordle_craft" target="_blank" class="github-btn">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
+              </svg>
+            </a>
+          </div>
+        </div>
         <div class="tagline">Design your perfect board · Find matching words</div>
       </div>
 
-      <div class="header-mid" style="display:flex; justify-content:space-between; align-items:center;">
-        <div class="theme-selection" style="display:flex; align-items:center; gap:16px;">
-          <span
-            style="font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 2px;">Select
-            Theme:</span>
-          <div class="theme-switcher" style="display:flex; gap:8px;">
+      <div class="header-mid">
+        <div class="theme-selection">
+          <span class="theme-label">Select Theme:</span>
+          <div class="theme-switcher">
             <button class="theme-swatch" style="background: #ece0c2;" onclick="setTheme('beige')"
               title="Beige"></button>
             <button class="theme-swatch" style="background: #BAE6FD;" onclick="setTheme('blue')" title="Blue"></button>
@@ -47,11 +54,10 @@
         </div>
         
         <div class="header-actions">
-          <button class="btn btn-ghost btn-sm"
-            style="height:32px; font-size:0.8rem; padding: 0 16px; border-radius: 99px;"
+          <button class="btn btn-ghost btn-sm btn-how-it-works mobile-hide"
             onclick="openModal('introModal')">HOW IT WORKS</button>
 
-          <div style="position: relative; margin-right: 4px;">
+          <div class="github-container mobile-hide">
             <a href="https://github.com/luleoa12/wordle_craft" target="_blank" class="github-btn">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path>
@@ -64,13 +70,13 @@
 
     <!-- Step 1: Fetch today's answer -->
     <div class="section" id="step1">
-      <div style="display:flex; align-items:center; gap:16px; margin-bottom: 12px;">
+      <div class="section-header">
         <div class="step-badge inline">01</div>
-        <div class="section-title" style="margin-bottom:0;">Today's Target</div>
+        <div class="section-title">Today's Target</div>
       </div>
       <div class="section-desc">Start with today's Wordle answer, or enter your own 5-letter word.</div>
 
-      <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;justify-content:flex-start;">
+      <div class="step-controls">
         <button class="btn btn-primary" id="fetchBtn" onclick="fetchTodaysWord()">
           <span id="fetchIcon"></span> Fetch Today's Word
         </button>
@@ -85,18 +91,34 @@
 
     <!-- Step 2: Design the board -->
     <div class="section disabled" id="step2">
-      <div style="display:flex; align-items:center; gap:16px; margin-bottom: 12px;">
+      <div class="section-header">
         <div class="step-badge inline">02</div>
-        <div class="section-title" style="margin-bottom:0;">Design Your Pattern</div>
+        <div class="section-title">Design Your Pattern</div>
       </div>
       <div class="section-desc">Click tiles to paint a pattern. We'll find real words that match.</div>
 
-      <div
-        style="display:flex; align-items:stretch; justify-content:flex-start; gap:72px; flex-wrap:nowrap; margin:32px 0;">
-        <div class="grid-builder" id="gridBuilder" style="margin:0;"></div>
+      <div class="step-layout">
+        <div class="grid-wrapper" style="display:flex; flex-direction:column; align-items:center; gap: 16px;">
+          <div class="grid-builder" id="gridBuilder"></div>
+          
+          <div class="mobile-legend">
+            <div class="mobile-legend-chip">
+              <div class="color-swatch-sm" style="background: #787c7e;"></div>
+              <span>Gray</span>
+            </div>
+            <div class="mobile-legend-chip">
+              <div class="color-swatch-sm" style="background: #c9b458;"></div>
+              <span>Yellow</span>
+            </div>
+            <div class="mobile-legend-chip">
+              <div class="color-swatch-sm" style="background: #6aaa64;"></div>
+              <span>Green</span>
+            </div>
+          </div>
+        </div>
 
-        <div class="grid-legend">
-          <div class="legend-title" style="color: var(--text-main); margin-top: 4px; margin-bottom: -2px;">Paint Guide
+        <div class="grid-legend mobile-hide">
+          <div class="legend-title" style="margin-top: 4px; margin-bottom: -2px;">Paint Guide
           </div>
 
           <div class="legend-items">
@@ -116,7 +138,7 @@
 
           <div class="legend-divider"></div>
 
-          <div class="legend-title" style="color: var(--text-main); margin-top: 2px; margin-bottom: -2px;">Instructions
+          <div class="legend-title" style="margin-top: 2px; margin-bottom: -2px;">Instructions
           </div>
 
           <div class="instruction-list">
@@ -174,8 +196,7 @@
         </div>
       </div>
 
-      <div
-        style="display:flex; justify-content:center; align-items:center; margin-top: 32px; gap:22.7px; flex-wrap:nowrap;">
+      <div class="step-actions">
         <button class="btn btn-ghost" onclick="goToStep(1)">Change Word</button>
         <button class="btn btn-ghost" onclick="openShuffleModal()">Shuffle</button>
         <button class="btn btn-ghost" onclick="resetGrid()">Reset Tiles</button>
@@ -185,18 +206,18 @@
 
     <!-- Step 3: Share -->
     <div class="section disabled" id="step3">
-      <div style="display:flex; align-items:center; gap:16px; margin-bottom: 12px;">
+      <div class="section-header">
         <div class="step-badge inline">03</div>
-        <div class="section-title" style="margin-bottom:0;">Your Word List</div>
+        <div class="section-title">Your Word List</div>
       </div>
       <div class="section-desc">Here are the exact words you need to sequentially type into Wordle, row by row, to
         recreate your crafted pattern entirely legally!</div>
 
       <div id="wordListContainer" style="margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px;"></div>
 
-      <div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-top:24px; gap:16px;">
+      <div class="step-footer">
         <button class="btn btn-ghost" onclick="goToStep(2)">Edit Board</button>
-        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <div class="step-footer-actions">
           <button class="btn btn-primary" onclick="generateEmojiShare()">Share Emojis</button>
           <button class="btn btn-ghost" onclick="location.reload()">Start Over</button>
         </div>
@@ -209,8 +230,7 @@
       <div class="step-badge intro-badge">?</div>
 
       <div style="text-align: left;">
-        <div
-          style="font-family: var(--font-mono); font-size: 0.7rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px;">
+        <div class="modal-super-title">
           Word Game Designer</div>
         <div class="section-title" style="font-size: 1.5rem; margin-bottom: 12px;">Wordle Craft</div>
         <div class="section-desc" style="font-size: 0.85rem; margin-bottom: 24px; line-height: 1.5;">Craft a custom

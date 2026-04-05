@@ -16,9 +16,7 @@ async function loadWordList() {
     const response = await fetch('words.txt');
     const text = await response.text();
     WORD_LIST = text.split('\n').map(w => w.trim().toLowerCase()).filter(w => w.length === 5);
-    console.info(`[WordList] Loaded ${WORD_LIST.length} words from words.txt`);
   } catch (err) {
-    console.error(`[WordList] Failed to load words.txt:`, err);
     showToast('toastContainer', 'error', 'Failed to load word list. Please refresh.');
   }
 }
@@ -101,8 +99,9 @@ async function fetchTodaysWord() {
   const icon = document.getElementById('fetchIcon');
 
   try {
-    const today = new Date().toLocaleDateString("en-CA");
-    const res = await fetch(`https://wordle-craft.luleoa12.workers.dev?date=${today}`);
+    const now = new Date().toISOString();
+    console.log(now)
+    const res = await fetch(`https://wordle-craft.luleoa12.workers.dev?datetime=${now}`);
     const data = await res.json();
     const word = data.answer?.toUpperCase();
 
@@ -110,7 +109,6 @@ async function fetchTodaysWord() {
       applyAnswer(word);
       showToast('toastContainer', 'ok', 'Word successfully fetched');
     } else {
-      console.error(`[Fetch] Validation failed. Word: "${word}"`);
       throw new Error('Word not found or invalid format. Override manually.');
     }
   } catch (err) {
@@ -597,7 +595,7 @@ function updateShuffleUI() {
   colors.forEach(color => {
     const isChecked = document.getElementById(`shuffle${color}`).checked;
     const card = document.getElementById(`card${color}`);
-    
+
     if (card) {
       if (isChecked) {
         card.classList.add('active');
@@ -655,7 +653,7 @@ function shuffleTiles() {
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
       const cell = state.grid[r][c];
-      
+
       if (anyClicked) {
         if (cell.clicked && shuffleColorPool.includes(cell.color)) {
           tilesToShuffle.push({ r, c });
@@ -708,7 +706,7 @@ function generateValidPattern() {
   const shuffleGray = document.getElementById('shuffleGray').checked;
   const shuffleYellow = document.getElementById('shuffleYellow').checked;
   const shuffleGreen = document.getElementById('shuffleGreen').checked;
-  
+
   const shuffleColorPool = [];
   if (shuffleGray) shuffleColorPool.push('gray');
   if (shuffleYellow) shuffleColorPool.push('yellow');
@@ -720,12 +718,12 @@ function generateValidPattern() {
   }
 
   let impossibleRows = [];
-  
+
   for (let r = 0; r < ROWS; r++) {
     const row = state.grid[r];
     const rowHasClicked = row.some(c => c.clicked);
     const stayingConstraints = []; // {col, color}
-    
+
     for (let c = 0; c < COLS; c++) {
       let stays = false;
       if (rowHasClicked) {
@@ -745,7 +743,7 @@ function generateValidPattern() {
 
     const matchingWords = WORD_LIST.filter(word => {
       const actualPattern = scoreGuess(word.toUpperCase(), answer);
-      
+
       const matchesConstraints = stayingConstraints.every(con => actualPattern[con.c] === con.color);
       if (!matchesConstraints) return false;
 
@@ -770,11 +768,11 @@ function generateValidPattern() {
         const p = scoreGuess(word.toUpperCase(), answer);
         return p.some(color => color !== 'gray');
       });
-      
+
       const pool = interestingWords.length > 0 ? interestingWords : matchingWords;
       const chosenWord = pool[Math.floor(Math.random() * pool.length)];
       const newPattern = scoreGuess(chosenWord.toUpperCase(), answer);
-      
+
       for (let c = 0; c < COLS; c++) {
         let canShuffle = false;
         if (rowHasClicked) {
@@ -785,7 +783,7 @@ function generateValidPattern() {
 
         if (canShuffle) {
           state.grid[r][c].color = newPattern[c];
-          state.grid[r][c].clicked = true; 
+          state.grid[r][c].clicked = true;
         }
       }
     } else {
@@ -794,7 +792,7 @@ function generateValidPattern() {
   }
 
   renderGrid();
-  
+
   if (impossibleRows.length > 0) {
     showToast('toastContainer', 'error', `IMPOSSIBLE PATTERN: No real words match constraints for row(s) ${impossibleRows.join(', ')}.`);
   } else {

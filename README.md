@@ -5,7 +5,7 @@ Most Wordle grids are luck. This one is designed.
 
 Paint any pattern. Get the exact words to play it out.
 
-[![Try it](https://img.shields.io/badge/Try%20it-live-brightgreen?style=for-the-badge)](https://yoursite.com)
+[![Try it](https://img.shields.io/badge/Try%20it-live-brightgreen?style=for-the-badge)](https://wordle-craft.vercel.app)
 
 <table>
 <tr>

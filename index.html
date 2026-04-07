@@ -364,13 +364,18 @@
   <script src="script.js"></script>
 
   <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-V1W653D1R4"></script>
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
+    if (window.location.hostname === 'wordle-craft.vercel.app') {
+      var script = document.createElement('script');
+      script.async = true;
+      script.src = "https://www.googletagmanager.com/gtag/js?id=G-V1W653D1R4";
+      document.head.appendChild(script);
 
-    gtag('config', 'G-V1W653D1R4');
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'G-V1W653D1R4');
+    }
   </script>
 </body>
 

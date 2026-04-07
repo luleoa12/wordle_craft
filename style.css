@@ -1370,17 +1370,15 @@ body.modal-open {
   }
 
   .step-footer-actions {
-    flex-wrap: nowrap;
-    gap: 6px;
-    flex: 2;
+    display: contents;
   }
 
   .step-footer .btn {
-    font-size: 0.75rem;
-    padding: 0 4px;
-    height: 44px;
+    font-size: clamp(0.6rem, 3.2vw, 0.9rem);
+    padding: 0 clamp(2px, 2vw, 10px);
+    height: 48px;
     white-space: nowrap;
-    flex: 1;
+    flex: auto;
     min-width: 0;
   }
 }

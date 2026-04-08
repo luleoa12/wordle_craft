@@ -806,6 +806,138 @@ function closeIntro() {
   localStorage.setItem('wc_intro_v4', 'true');
 }
 
+const PREMADE_PATTERNS = [
+  { name: '6', pattern: [['G', 'Y', 'Y', 'Y', 'G'], ['G', 'Y', 'G', 'G', 'G'], ['G', 'Y', 'Y', 'Y', 'G'], ['G', 'Y', 'G', 'Y', 'G'], ['G', 'Y', 'Y', 'Y', 'G'], ['Gr', 'Gr', 'Gr', 'Gr', 'Gr']] },
+  { name: '7', pattern: [['G', 'Y', 'Y', 'Y', 'G'], ['G', 'G', 'G', 'Y', 'G'], ['G', 'G', 'Y', 'G', 'G'], ['G', 'G', 'Y', 'G', 'G'], ['G', 'G', 'Y', 'G', 'G'], ['Gr', 'Gr', 'Gr', 'Gr', 'Gr']] },
+  { name: 'Checkerboard', pattern: [['G', 'Y', 'G', 'Y', 'G'], ['Y', 'G', 'Y', 'G', 'Y'], ['G', 'Y', 'G', 'Y', 'G'], ['Y', 'G', 'Y', 'G', 'Y'], ['G', 'Y', 'G', 'Y', 'G'], ['Y', 'G', 'Y', 'G', 'Y']] },
+  { name: 'Among Us 1', pattern: [['G', 'G', 'G', 'G', 'G'], ['G', 'Y', 'Y', 'Y', 'G'], ['G', 'Y', 'Gr', 'Gr', 'G'], ['Gr', 'Y', 'Y', 'Y', 'G'], ['G', 'Y', 'G', 'Y', 'G'], ['Gr', 'Gr', 'Gr', 'Gr', 'Gr']] },
+  { name: 'Among Us 2', pattern: [['G', 'Y', 'Y', 'Y', 'Y'], ['Y', 'Y', 'Gr', 'Gr', 'Gr'], ['Y', 'Y', 'Gr', 'Gr', 'Gr'], ['Y', 'Y', 'Y', 'Y', 'Y'], ['G', 'Y', 'Y', 'Y', 'Y'], ['G', 'Y', 'G', 'G', 'Y']] },
+  { name: 'Smiley 1', pattern: [['Y', 'Y', 'Y', 'Y', 'Y'], ['Y', 'Gr', 'Y', 'Gr', 'Y'], ['Y', 'Y', 'Y', 'Y', 'Y'], ['Gr', 'Y', 'Y', 'Y', 'Gr'], ['Y', 'Gr', 'Gr', 'Gr', 'Y'], ['Y', 'Y', 'Y', 'Y', 'Y']] },
+  { name: 'Smiley 2', pattern: [['G', 'G', 'G', 'G', 'G'], ['G', 'Y', 'G', 'Y', 'G'], ['G', 'G', 'G', 'G', 'G'], ['Y', 'G', 'G', 'G', 'Y'], ['G', 'Y', 'Y', 'Y', 'G'], ['G', 'G', 'G', 'G', 'G']] },
+  { name: 'Smiley 3', pattern: [['G', 'G', 'G', 'G', 'G'], ['G', 'Gr', 'G', 'Gr', 'G'], ['G', 'G', 'G', 'G', 'G'], ['Gr', 'G', 'G', 'G', 'Gr'], ['G', 'Gr', 'Gr', 'Gr', 'G'], ['G', 'G', 'G', 'G', 'G']] },
+  { name: 'Smiley 4', pattern: [['G', 'Y', 'G', 'Y', 'G'], ['G', 'Y', 'G', 'Y', 'G'], ['G', 'G', 'G', 'G', 'G'], ['Y', 'G', 'G', 'G', 'Y'], ['Y', 'G', 'G', 'G', 'Y'], ['G', 'Y', 'Y', 'Y', 'G']] },
+  { name: 'Smiley 5', pattern: [['G', 'Gr', 'G', 'Gr', 'G'], ['G', 'Gr', 'G', 'Gr', 'G'], ['G', 'G', 'G', 'G', 'G'], ['Gr', 'G', 'G', 'G', 'Gr'], ['Gr', 'G', 'G', 'G', 'Gr'], ['G', 'Gr', 'Gr', 'Gr', 'G']] },
+  { name: 'Smiley 6', pattern: [['Y', 'Gr', 'Y', 'Gr', 'Y'], ['Y', 'Gr', 'Y', 'Gr', 'Y'], ['Y', 'Y', 'Y', 'Y', 'Y'], ['Gr', 'Y', 'Y', 'Y', 'Gr'], ['Gr', 'Y', 'Y', 'Y', 'Gr'], ['Y', 'Gr', 'Gr', 'Gr', 'Y']] },
+  { name: 'Star 1', pattern: [['G', 'G', 'Y', 'G', 'G'], ['G', 'Y', 'Y', 'Y', 'G'], ['Y', 'Y', 'Y', 'Y', 'Y'], ['G', 'Y', 'Y', 'Y', 'G'], ['G', 'G', 'Y', 'G', 'G'], ['G', 'G', 'G', 'G', 'G']] },
+  { name: 'Star 2', pattern: [['G', 'G', 'Y', 'G', 'G'], ['G', 'Y', 'Y', 'Y', 'G'], ['Y', 'Y', 'Gr', 'Y', 'Y'], ['G', 'Y', 'Y', 'Y', 'G'], ['G', 'G', 'Y', 'G', 'G'], ['G', 'G', 'G', 'G', 'G']] },
+  { name: 'Star 3', pattern: [['G', 'G', 'Y', 'G', 'G'], ['G', 'Y', 'Gr', 'Y', 'G'], ['Y', 'Gr', 'Gr', 'Gr', 'Y'], ['G', 'Y', 'Gr', 'Y', 'G'], ['G', 'G', 'Y', 'G', 'G'], ['G', 'G', 'G', 'G', 'G']] },
+  { name: 'Star 4', pattern: [['G', 'G', 'Gr', 'G', 'G'], ['G', 'Gr', 'Gr', 'Gr', 'G'], ['Gr', 'Gr', 'Gr', 'Gr', 'Gr'], ['G', 'Gr', 'Gr', 'Gr', 'G'], ['G', 'G', 'Gr', 'G', 'G'], ['G', 'G', 'G', 'G', 'G']] },
+  { name: 'Star 5', pattern: [['G', 'G', 'Gr', 'G', 'G'], ['G', 'Gr', 'Y', 'Gr', 'G'], ['Gr', 'Y', 'Y', 'Y', 'Gr'], ['G', 'Gr', 'Y', 'Gr', 'G'], ['G', 'G', 'Gr', 'G', 'G'], ['G', 'G', 'G', 'G', 'G']] },
+  { name: 'Square 1', pattern: [['G', 'G', 'G', 'G', 'G'], ['G', 'Y', 'Y', 'Y', 'G'], ['G', 'Y', 'G', 'Y', 'G'], ['G', 'Y', 'Y', 'Y', 'G'], ['G', 'G', 'G', 'G', 'G'], ['G', 'G', 'G', 'G', 'G']] },
+  { name: 'Square 2', pattern: [['G', 'G', 'G', 'G', 'G'], ['G', 'Y', 'Y', 'Y', 'G'], ['G', 'Y', 'Gr', 'Y', 'G'], ['G', 'Y', 'Y', 'Y', 'G'], ['G', 'G', 'G', 'G', 'G'], ['G', 'G', 'G', 'G', 'G']] },
+  { name: 'Square 3', pattern: [['G', 'G', 'G', 'G', 'G'], ['G', 'Gr', 'Gr', 'Gr', 'G'], ['G', 'Gr', 'Y', 'Gr', 'G'], ['G', 'Gr', 'Gr', 'Gr', 'G'], ['G', 'G', 'G', 'G', 'G'], ['G', 'G', 'G', 'G', 'G']] },
+  { name: 'Square 4', pattern: [['Y', 'Y', 'Y', 'Y', 'Y'], ['Y', 'G', 'G', 'G', 'Y'], ['Y', 'G', 'Gr', 'G', 'Y'], ['Y', 'G', 'G', 'G', 'Y'], ['Y', 'Y', 'Y', 'Y', 'Y'], ['G', 'G', 'G', 'G', 'G']] },
+  { name: 'Square 5', pattern: [['Y', 'Y', 'Y', 'Y', 'Y'], ['Y', 'Gr', 'G', 'Gr', 'Y'], ['Y', 'G', 'Gr', 'G', 'Y'], ['Y', 'Gr', 'G', 'Gr', 'Y'], ['Y', 'Y', 'Y', 'Y', 'Y'], ['G', 'G', 'G', 'G', 'G']] },
+  { name: 'Square 6', pattern: [['Y', 'Y', 'Y', 'Y', 'Y'], ['Y', 'G', 'Gr', 'G', 'Y'], ['Y', 'Gr', 'G', 'Gr', 'Y'], ['Y', 'G', 'Gr', 'G', 'Y'], ['Y', 'Y', 'Y', 'Y', 'Y'], ['G', 'G', 'G', 'G', 'G']] },
+  { name: 'Square 7', pattern: [['Y', 'Y', 'Y', 'Y', 'Y'], ['Y', 'Gr', 'G', 'Gr', 'Y'], ['Y', 'Gr', 'G', 'Gr', 'Y'], ['Y', 'Gr', 'G', 'Gr', 'Y'], ['Y', 'Y', 'Y', 'Y', 'Y'], ['G', 'G', 'G', 'G', 'G']] },
+  { name: 'Square 8', pattern: [['Y', 'Y', 'Y', 'Y', 'Y'], ['Y', 'G', 'Gr', 'G', 'Y'], ['Y', 'G', 'Gr', 'G', 'Y'], ['Y', 'G', 'Gr', 'G', 'Y'], ['Y', 'Y', 'Y', 'Y', 'Y'], ['G', 'G', 'G', 'G', 'G']] },
+  { name: 'Bullseye 1', pattern: [['G', 'Y', 'Y', 'Y', 'G'], ['Y', 'G', 'G', 'G', 'Y'], ['Y', 'G', 'G', 'G', 'Y'], ['Y', 'G', 'G', 'G', 'Y'], ['G', 'Y', 'Y', 'Y', 'G'], ['G', 'G', 'G', 'G', 'G']] },
+  { name: 'Bullseye 2', pattern: [['G', 'Y', 'Y', 'Y', 'G'], ['Y', 'G', 'G', 'G', 'Y'], ['Y', 'G', 'Gr', 'G', 'Y'], ['Y', 'G', 'G', 'G', 'Y'], ['G', 'Y', 'Y', 'Y', 'G'], ['G', 'G', 'G', 'G', 'G']] },
+  { name: 'Bullseye 3', pattern: [['G', 'Gr', 'Gr', 'Gr', 'G'], ['Gr', 'G', 'G', 'G', 'Gr'], ['Gr', 'G', 'Gr', 'G', 'Gr'], ['Gr', 'G', 'G', 'G', 'Gr'], ['G', 'Gr', 'Gr', 'Gr', 'G'], ['G', 'G', 'G', 'G', 'G']] },
+  { name: 'Bullseye 4', pattern: [['G', 'Gr', 'Gr', 'Gr', 'G'], ['Gr', 'G', 'G', 'G', 'Gr'], ['Gr', 'G', 'Y', 'G', 'Gr'], ['Gr', 'G', 'G', 'G', 'Gr'], ['G', 'Gr', 'Gr', 'Gr', 'G'], ['G', 'G', 'G', 'G', 'G']] },
+  { name: 'Bullseye 5', pattern: [['G', 'Y', 'Y', 'Y', 'G'], ['Y', 'G', 'G', 'G', 'Y'], ['Y', 'G', 'Y', 'G', 'Y'], ['Y', 'G', 'G', 'G', 'Y'], ['G', 'Y', 'Y', 'Y', 'G'], ['G', 'G', 'G', 'G', 'G']] },
+  { name: 'Bullseye 6', pattern: [['G', 'Gr', 'Gr', 'Gr', 'G'], ['Gr', 'G', 'G', 'G', 'Gr'], ['Gr', 'G', 'G', 'G', 'Gr'], ['Gr', 'G', 'G', 'G', 'Gr'], ['G', 'Gr', 'Gr', 'Gr', 'G'], ['G', 'G', 'G', 'G', 'G']] },
+  { name: 'Kangaroo 1', pattern: [['G', 'Y', 'G', 'G', 'G'], ['Y', 'Y', 'G', 'G', 'G'], ['G', 'Y', 'Y', 'G', 'G'], ['G', 'Y', 'Y', 'Y', 'G'], ['G', 'G', 'Y', 'G', 'Y'], ['G', 'Y', 'Y', 'G', 'G']] },
+  { name: 'Kangaroo 2', pattern: [['G', 'Gr', 'G', 'G', 'G'], ['Gr', 'Gr', 'G', 'G', 'G'], ['G', 'Gr', 'Gr', 'G', 'G'], ['G', 'Gr', 'Gr', 'Gr', 'G'], ['G', 'G', 'Gr', 'G', 'Gr'], ['G', 'Gr', 'Gr', 'G', 'G']] },
+  { name: 'Kangaroo 3', pattern: [['Y', 'Gr', 'Y', 'Y', 'Y'], ['Gr', 'Gr', 'Y', 'Y', 'Y'], ['Y', 'Gr', 'Gr', 'Y', 'Y'], ['Y', 'Gr', 'Gr', 'Gr', 'Y'], ['Y', 'Y', 'Gr', 'Y', 'Gr'], ['Y', 'Gr', 'Gr', 'Y', 'Y']] },
+  { name: 'Question 1', pattern: [['G', 'Gr', 'Gr', 'Gr', 'G'], ['Gr', 'G', 'G', 'G', 'Gr'], ['G', 'G', 'Gr', 'Gr', 'G'], ['G', 'G', 'Gr', 'G', 'G'], ['G', 'G', 'G', 'G', 'G'], ['G', 'G', 'Gr', 'G', 'G']] },
+  { name: 'Question 2', pattern: [['G', 'Y', 'Y', 'Y', 'G'], ['Y', 'G', 'G', 'G', 'Y'], ['G', 'G', 'Y', 'Y', 'G'], ['G', 'G', 'Y', 'G', 'G'], ['G', 'G', 'G', 'G', 'G'], ['G', 'G', 'Y', 'G', 'G']] },
+  { name: 'Flower', pattern: [['G', 'G', 'Y', 'G', 'G'], ['G', 'Y', 'Gr', 'Y', 'G'], ['G', 'G', 'Y', 'G', 'G'], ['G', 'G', 'Gr', 'G', 'G'], ['Gr', 'G', 'Gr', 'G', 'Gr'], ['Gr', 'Gr', 'Gr', 'Gr', 'Gr']] }
+];
+
+function isPatternPossible(patternArr) {
+  if (!state.answer || WORD_LIST.length === 0) return true;
+  const target = state.answer.toUpperCase();
+  const colorMap = { 'G': 'gray', 'Y': 'yellow', 'Gr': 'green' };
+
+  for (let r = 0; r < ROWS; r++) {
+    const desired = patternArr[r].map(c => colorMap[c]);
+    const hasMatch = WORD_LIST.some(word => {
+      const actual = scoreGuess(word.toUpperCase(), target);
+      return patternMatches(actual, desired);
+    });
+    if (!hasMatch) return false;
+  }
+  return true;
+}
+
+let currentPatternFilter = 'all';
+
+function setPatternFilter(filter) {
+  currentPatternFilter = filter;
+  // Update button active state
+  document.querySelectorAll('.filter-pill').forEach(btn => {
+    btn.classList.toggle('active', btn.textContent.toLowerCase() === filter.toLowerCase());
+  });
+  renderExamplesGrid();
+}
+
+function openExamplesModal() {
+  setPatternFilter('all');
+  openModal('examplesModal');
+}
+
+function renderExamplesGrid() {
+  const grid = document.getElementById('patternsGrid');
+  if (!grid) return;
+
+  const patterns = PREMADE_PATTERNS.map((p, idx) => ({
+    ...p,
+    idx,
+    isPossible: isPatternPossible(p.pattern)
+  }));
+
+  const filtered = patterns.filter(p => {
+    if (currentPatternFilter === 'all') return true;
+    if (currentPatternFilter === 'possible') return p.isPossible;
+    if (currentPatternFilter === 'impossible') return !p.isPossible;
+    return true;
+  });
+
+
+
+  grid.innerHTML = filtered.map(p => {
+    const statusClass = p.isPossible ? 'status-possible' : 'status-impossible';
+    const statusText = p.isPossible ? 'Possible' : 'Impossible';
+
+    return `
+      <div class="pattern-item ${statusClass}" onclick="applyPremadePattern(${p.idx})">
+        <div class="pattern-item-header">
+          <div class="pattern-name">${p.name}</div>
+          <div class="pattern-pill">${statusText}</div>
+        </div>
+        <div class="pattern-preview">
+          ${p.pattern.map(row => `
+            <div class="preview-row">
+              ${row.map(c => `<div class="preview-tile preview-${c}"></div>`).join('')}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function applyPremadePattern(idx) {
+  const p = PREMADE_PATTERNS[idx];
+  if (!p) return;
+
+  const colorMap = { 'G': 'gray', 'Y': 'yellow', 'Gr': 'green' };
+
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      state.grid[r][c].color = colorMap[p.pattern[r][c]];
+      state.grid[r][c].clicked = true;
+      state.grid[r][c].letter = '';
+    }
+  }
+
+  renderGrid();
+  closeModal('examplesModal');
+  showToast('toastContainer', 'ok', `${p.name} pattern applied!`);
+  document.getElementById('step3').classList.add('disabled');
+}
+
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Tab') return;
 

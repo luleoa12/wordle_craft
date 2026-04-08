@@ -99,9 +99,15 @@ async function fetchTodaysWord() {
   const icon = document.getElementById('fetchIcon');
 
   try {
-    const now = new Date().toISOString();
-    console.log(now)
-    const res = await fetch(`https://wordle-craft.luleoa12.workers.dev?datetime=${now}`);
+    const now = new Date();
+    const isoLocal = now.getFullYear() + '-' +
+                     String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                     String(now.getDate()).padStart(2, '0') + 'T' +
+                     String(now.getHours()).padStart(2, '0') + ':' +
+                     String(now.getMinutes()).padStart(2, '0') + ':' +
+                     String(now.getSeconds()).padStart(2, '0');
+
+    const res = await fetch(`https://wordle-craft.luleoa12.workers.dev?datetime=${isoLocal}`);
     const data = await res.json();
     const word = data.answer?.toUpperCase();
 

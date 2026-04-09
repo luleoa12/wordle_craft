@@ -199,16 +199,7 @@ header {
   margin-top: 4px;
 }
 
-.intro-badge {
-  left: auto;
-  right: -24px;
-  top: -24px;
-  transform: rotate(12deg);
-  width: 54px;
-  height: 54px;
-  font-size: 1.6rem;
-  border-radius: 8px;
-}
+
 
 /* Buttons */
 .btn {
@@ -780,26 +771,7 @@ body.modal-open {
   border-radius: 12px;
 }
 
-.intro-badge {
-  position: absolute;
-  right: -20px;
-  top: -20px;
-  transform: rotate(12deg);
-  width: 56px;
-  height: 56px;
-  background: var(--accent-primary);
-  border: 4px solid var(--border-main);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 2rem;
-  z-index: 50;
-  box-shadow: 6px 6px 0px var(--border-main);
-  color: #fff;
-  border-radius: 10px;
-}
+
 
 .intro-card {
   background: #fff;

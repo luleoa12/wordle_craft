@@ -95,6 +95,13 @@ function tileDrag(r, c) {
   applyColor(r, c, dragColor);
 }
 
+function tileCtx(r, c, e) {
+  e.preventDefault();
+  saveUndo();
+  const cur = CYCLE.indexOf(state.grid[r][c].color);
+  applyColor(r, c, CYCLE[(cur + 2) % 3]);
+}
+
 function getGridHTML(interactive) {
   let html = '';
   for (let r = 0; r < ROWS; r++) {
@@ -106,7 +113,7 @@ function getGridHTML(interactive) {
       let eventAttrs = '';
       if (interactive) {
         if (state.answer) {
-          eventAttrs = `onmousedown="tileDown(${r}, ${c}, event)" onmouseenter="tileDrag(${r}, ${c})"`;
+          eventAttrs = `onmousedown="tileDown(${r}, ${c}, event)" onmouseenter="tileDrag(${r}, ${c})" oncontextmenu="tileCtx(${r}, ${c}, event)"`;
         } else {
           eventAttrs = `onmousedown="showToast('toastContainer', 'warn', 'Initialize payload first on Step 1!')"`;
         }

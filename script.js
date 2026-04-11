@@ -2,6 +2,10 @@ const ROWS = 6;
 const COLS = 5;
 const CYCLE = ['gray', 'yellow', 'green'];
 
+let dragging = false;
+let dragColor = null;
+let undoStack = [];
+
 let state = {
   answer: '',
   grid: [],       // 6×5 of {letter, color}
@@ -33,38 +37,17 @@ function initGrid() {
   renderGrid();
 }
 
-function getGridHTML(interactive) {
-  let html = '';
-  for (let r = 0; r < ROWS; r++) {
-    html += `<div class="grid-row-wrap"><div class="grid-row">`;
-    for (let c = 0; c < COLS; c++) {
-      const cell = state.grid[r][c];
-      const clsStr = `tile tile-${cell.color} ${cell.clicked ? 'tile-clicked' : ''}`;
-
-      let clickAttr = '';
-      if (interactive) {
-        if (state.answer) {
-          clickAttr = `onclick="cycleTile(${r}, ${c})"`;
-        } else {
-          clickAttr = `onclick="showToast('toastContainer', 'warn', 'Initialize payload first on Step 1!')"`;
-        }
-      }
-
-      html += `<div id="tile-${interactive ? 'edit' : 'prev'}-${r}-${c}" class="${clsStr}" ${clickAttr}"></div>`;
-    }
-    html += `</div></div>`;
-  }
-  return html;
+function saveUndo() {
+  if (!state.grid) return;
+  undoStack.push(JSON.parse(JSON.stringify(state.grid)));
+  if (undoStack.length > 50) undoStack.shift();
 }
 
-function renderGrid() {
-  document.getElementById('gridBuilder').innerHTML = getGridHTML(true);
-}
-
-function cycleTile(r, c) {
+function applyColor(r, c, color) {
   const cell = state.grid[r][c];
-  const idx = CYCLE.indexOf(cell.color);
-  cell.color = CYCLE[(idx + 1) % CYCLE.length];
+  if (cell.color === color && cell.clicked) return;
+
+  cell.color = color;
   cell.letter = '';
   cell.clicked = true;
 
@@ -87,9 +70,57 @@ function cycleTile(r, c) {
   if (window._impossibleRows) {
     window._impossibleRows = window._impossibleRows.filter(row => row !== r);
   }
-  clearToast('step2Toast');
+  
+  if (typeof clearToast === 'function') {
+    clearToast('step2Toast');
+  }
 
-  document.getElementById('step3').classList.add('disabled');
+  const step3 = document.getElementById('step3');
+  if (step3) step3.classList.add('disabled');
+}
+
+function tileDown(r, c, e) {
+  if (e.button !== 0) return;
+  saveUndo();
+  dragging = true;
+
+  const cell = state.grid[r][c];
+  const idx = CYCLE.indexOf(cell.color);
+  dragColor = CYCLE[(idx + 1) % CYCLE.length];
+  applyColor(r, c, dragColor);
+}
+
+function tileDrag(r, c) {
+  if (!dragging) return;
+  applyColor(r, c, dragColor);
+}
+
+function getGridHTML(interactive) {
+  let html = '';
+  for (let r = 0; r < ROWS; r++) {
+    html += `<div class="grid-row-wrap"><div class="grid-row">`;
+    for (let c = 0; c < COLS; c++) {
+      const cell = state.grid[r][c];
+      const clsStr = `tile tile-${cell.color} ${cell.clicked ? 'tile-clicked' : ''}`;
+
+      let eventAttrs = '';
+      if (interactive) {
+        if (state.answer) {
+          eventAttrs = `onmousedown="tileDown(${r}, ${c}, event)" onmouseenter="tileDrag(${r}, ${c})"`;
+        } else {
+          eventAttrs = `onmousedown="showToast('toastContainer', 'warn', 'Initialize payload first on Step 1!')"`;
+        }
+      }
+
+      html += `<div id="tile-${interactive ? 'edit' : 'prev'}-${r}-${c}" class="${clsStr}" ${eventAttrs}></div>`;
+    }
+    html += `</div></div>`;
+  }
+  return html;
+}
+
+function renderGrid() {
+  document.getElementById('gridBuilder').innerHTML = getGridHTML(true);
 }
 
 // Fetch word 
@@ -527,6 +558,14 @@ function showToast(id, type, msg) {
     toast.classList.add('fade-out');
     setTimeout(() => toast.remove(), 400);
   }, 3500);
+}
+
+function clearToast(id) {
+  const container = document.getElementById('toastContainer');
+  if (container) {
+    // If we wanted to clear specific toasts, we'd need to track them.
+    // For now, this is a placeholder to prevent errors.
+  }
 }
 // Theme Switcher 
 const THEMES = {
@@ -980,4 +1019,8 @@ window.addEventListener('DOMContentLoaded', () => {
   if (!localStorage.getItem('wc_intro_v4')) {
     openModal('introModal');
   }
+});
+
+document.addEventListener('mouseup', () => {
+  dragging = false;
 });

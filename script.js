@@ -1239,9 +1239,19 @@ window.addEventListener('DOMContentLoaded', () => {
     loadFromHash(boardHash);
     window.history.replaceState({}, document.title, window.location.pathname);
   } else {
+    // Only check session if we are NOT loading from a shared link
     checkSession();
   }
 });
+
+function handleStartOver() {
+  localStorage.removeItem('wc_session_state');
+  location.reload();
+}
+
+function handleResetSession() {
+  localStorage.removeItem('wc_session_state');
+}
 
 document.addEventListener('mouseup', () => {
   dragging = false;
@@ -1261,11 +1271,25 @@ function saveSession() {
 }
 
 function checkSession() {
+  // Only show restore prompt if the user reloaded the page (accidental loss protection)
+  // performance.getEntriesByType("navigation") is standard for detecting navigation type
+  const navEntries = performance.getEntriesByType("navigation");
+  const isReload = navEntries.length > 0 && navEntries[0].type === 'reload';
+
+  if (!isReload) {
+    // If it's a fresh visit (not a reload), we don't show the prompt.
+    return;
+  }
+
   const saved = localStorage.getItem('wc_session_state');
   if (saved) {
     try {
       const parsed = JSON.parse(saved);
-      if (parsed.answer || parsed.grid.some(row => row.some(cell => cell.color !== 'gray'))) {
+      // Logic: Only restore if they had a word AND had clicked at least one tile
+      const hasWord = !!parsed.answer;
+      const hasClickedTiles = parsed.grid && parsed.grid.some(row => row.some(cell => cell.clicked || cell.color !== 'gray'));
+      
+      if (hasWord && hasClickedTiles) {
         showRestoreToast(parsed);
       }
     } catch (e) {

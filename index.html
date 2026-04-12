@@ -269,7 +269,7 @@
       </div>
 
       <div class="step-actions">
-        <button class="btn btn-ghost" onclick="goToStep(1)">Change Word</button>
+        <button class="btn btn-ghost" onclick="handleResetSession(); goToStep(1)">Change Word</button>
         <button class="btn btn-ghost" onclick="openShuffleModal()">Shuffle</button>
         <button class="btn btn-ghost" onclick="resetGrid()">Reset Tiles</button>
         <button class="btn btn-primary" id="generateBtn" onclick="findWords()">Find Words →</button>
@@ -313,7 +313,7 @@
         <button class="btn btn-ghost" onclick="goToStep(2)">Edit Board</button>
         <div class="step-footer-actions">
           <button class="btn btn-primary" onclick="generateEmojiShare()">Share Emojis</button>
-          <button class="btn btn-ghost" onclick="location.reload()">Start Over</button>
+          <button class="btn btn-ghost" onclick="handleStartOver()">Start Over</button>
         </div>
       </div>
     </div>

@@ -564,6 +564,12 @@ function generateShare() {
     }
     container.appendChild(rowDiv);
   }
+
+  const hash = encryptShare();
+  const visibleLink = document.getElementById('visibleShareLink');
+  if (visibleLink) {
+    visibleLink.textContent = window.location.hostname + window.location.pathname + '?b=' + hash;
+  }
 }
 
 async function generateEmojiShare() {
@@ -605,6 +611,130 @@ async function generateEmojiShare() {
   } catch (e) {
     showToast('toastContainer', 'error', 'Failed to copy emoji pattern.');
   }
+}
+
+const CIPHER_A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+const CIPHER_B = 'nopqrstuvwxyz0123456789+/ABCDEFGHIJKLMabcdefghijklmNOPQRSTUVWXYZ';
+
+function encryptShare() {
+  const colorCode = {'gray': '0', 'yellow': '1', 'green': '2'};
+  let p = '';
+  for(let r=0; r<ROWS; r++) {
+    for(let c=0; c<COLS; c++) {
+      p += colorCode[state.grid[r][c].color] || '0';
+    }
+  }
+  const w = state.answer || '';
+  const raw = w + '|' + p;
+
+  const salt = Math.floor(Math.random() * 256);
+  let bytes = [salt];
+  for(let i=0; i<raw.length; i++) {
+    bytes.push(raw.charCodeAt(i) ^ salt ^ (i % 256));
+  }
+  
+  let byteStr = '';
+  for(let i=0; i<bytes.length; i++) {
+    byteStr += String.fromCharCode(bytes[i]);
+  }
+  
+  const b64 = btoa(byteStr).replace(/=/g, '');
+  let res = '';
+  for(let i=0; i<b64.length; i++) {
+    const idx = CIPHER_A.indexOf(b64[i]);
+    res += idx !== -1 ? CIPHER_B[idx] : b64[i];
+  }
+  return res;
+}
+
+function decryptShare(hash) {
+  try {
+    let b64 = '';
+    for(let i=0; i<hash.length; i++) {
+      const idx = CIPHER_B.indexOf(hash[i]);
+      b64 += idx !== -1 ? CIPHER_A[idx] : hash[i];
+    }
+    while(b64.length % 4 !== 0) b64 += '=';
+    
+    const byteStr = atob(b64);
+    if (byteStr.length < 1) return null;
+    
+    const salt = byteStr.charCodeAt(0);
+    let raw = '';
+    for(let i=1; i<byteStr.length; i++) {
+      const charCode = byteStr.charCodeAt(i) ^ salt ^ ((i - 1) % 256);
+      raw += String.fromCharCode(charCode);
+    }
+    
+    const [w, p] = raw.split('|');
+    return {w, p};
+  } catch(e) { return null; }
+}
+
+async function generateLinkShare() {
+  const hash = encryptShare();
+  const link = window.location.origin + window.location.pathname + '?b=' + hash;
+
+  let success = false;
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(link);
+      success = true;
+    } else {
+      const textArea = document.createElement("textarea");
+      textArea.value = link;
+      document.body.appendChild(textArea);
+      textArea.select();
+      success = document.execCommand('copy');
+      document.body.removeChild(textArea);
+    }
+    if (success) {
+      showToast('toastContainer', 'ok', 'Shareable link copied to clipboard!');
+      const btn = document.getElementById('copyLinkBtn');
+      if (btn) {
+        const textEl = btn.querySelector('.copy-btn-text');
+        if (textEl) {
+          const originalText = textEl.textContent;
+          textEl.textContent = 'Copied!';
+          setTimeout(() => {
+            textEl.textContent = originalText;
+          }, 1500);
+        }
+      }
+    } else {
+      throw new Error('Copy failed');
+    }
+  } catch (e) {
+    showToast('toastContainer', 'error', 'Failed to copy link.');
+  }
+}
+
+function loadFromHash(hash) {
+  const data = decryptShare(hash);
+  if (!data) {
+     showToast('toastContainer', 'error', 'Invalid share link!');
+     return;
+  }
+  const {w, p} = data;
+  if (!w || !p || p.length !== 30) return;
+  
+  applyAnswer(w, 'shared');
+  
+  const codeColor = {'0': 'gray', '1': 'yellow', '2': 'green'};
+  let idx = 0;
+  for(let r=0; r<ROWS; r++) {
+    for(let c=0; c<COLS; c++) {
+      const color = codeColor[p[idx]] || 'gray';
+      state.grid[r][c].color = color;
+      if (color !== 'gray') {
+        state.grid[r][c].clicked = true;
+      }
+      idx++;
+    }
+  }
+  renderGrid();
+  goToStep(2);
+  showToast('toastContainer', 'info', `Loaded shared board with target word: ${w}`);
 }
 
 // Toasts 
@@ -1103,7 +1233,14 @@ window.addEventListener('DOMContentLoaded', () => {
     openModal('introModal');
   }
 
-  checkSession();
+  const urlParams = new URLSearchParams(window.location.search);
+  const boardHash = urlParams.get('b');
+  if (boardHash) {
+    loadFromHash(boardHash);
+    window.history.replaceState({}, document.title, window.location.pathname);
+  } else {
+    checkSession();
+  }
 });
 
 document.addEventListener('mouseup', () => {

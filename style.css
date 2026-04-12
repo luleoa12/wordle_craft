@@ -683,6 +683,47 @@ input.custom-input:focus {
   --tile-shadow: #4b7a47;
 }
 
+/* Color-Blind Mode Symbols (Large Inner Icons) */
+.cb-mode .tile {
+  position: relative;
+}
+
+.cb-mode .tile::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.5);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  display: block;
+}
+
+.cb-mode .tile-gray::after {
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+}
+
+.cb-mode .tile-yellow::after {
+  width: 26px;
+  height: 26px;
+  border-radius: 4px;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.cb-mode .tile-green::after {
+  width: 40px;
+  height: 40px;
+  background-color: transparent;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg opacity='0.5'%3E%3Cpath d='M50 24 L80 76 L20 76 Z' fill='white' stroke='white' stroke-width='12' stroke-linejoin='round'/%3E%3C/g%3E%3C/svg%3E");
+}
+
 .tile.tile-locked,
 .tile.tile-clicked {
   cursor: pointer;

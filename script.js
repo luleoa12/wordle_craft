@@ -73,15 +73,14 @@ function doRedo() {
 }
 
 function colorLabel(c) {
-  if (!cbMode) return '';
-  const labels = { gray: '■', yellow: '◆', green: '●' };
-  return labels[c] || '';
+  return '';
 }
 
 function toggleColorBlind() {
   cbMode = !cbMode;
   const toggle = document.getElementById('cbModeToggle');
   if (toggle) toggle.checked = cbMode;
+  document.body.classList.toggle('cb-mode', cbMode);
   renderGrid();
 }
 

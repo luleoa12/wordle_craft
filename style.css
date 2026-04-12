@@ -166,7 +166,7 @@ header {
   color: var(--text-main);
   font-family: var(--font-mono);
   font-size: 0.95rem;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
   line-height: 1.6;
   max-width: 650px;
   font-weight: 400;
@@ -425,6 +425,90 @@ input.custom-input:focus {
 
 .tile:active:not(.tile-locked) {
   transform: scale(1.05);
+}
+
+/* Toolbar */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0;
+  margin-top: 0;
+  margin-bottom: -15px;
+}
+
+.undo-redo-group,
+.cb-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolbar-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--bg-main);
+  border: 3px solid var(--border-main);
+  border-radius: 8px;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  box-shadow: 3px 3px 0px var(--border-main);
+  color: var(--text-main);
+}
+
+.toolbar-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0px var(--border-main);
+}
+
+.toolbar-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0px var(--border-main);
+}
+
+.toolbar-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 2px 2px 0px var(--border-main);
+}
+
+.toolbar-badge {
+  background: #6aaa64;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 900;
+  padding: 2px 6px;
+  border-radius: 99px;
+  border: 2px solid var(--border-main);
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cb-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+@media (max-width: 768px) {
+  .toolbar {
+    max-width: 100%;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 8px;
+  }
 }
 
 .grid-legend {
@@ -1468,7 +1552,8 @@ body.modal-open {
   border-radius: 12px;
   box-shadow: 4px 4px 0px var(--border-main);
   position: relative;
-  min-width: 0; /* Prevents flex items from overflowing */
+  min-width: 0;
+  /* Prevents flex items from overflowing */
 }
 
 .pattern-item-header {
@@ -1533,9 +1618,17 @@ body.modal-open {
   border: 2px solid rgba(0, 0, 0, 0.15);
 }
 
-.preview-G { background-color: #787c7e; }
-.preview-Y { background-color: #c9b458; }
-.preview-Gr { background-color: #6aaa64; }
+.preview-G {
+  background-color: #787c7e;
+}
+
+.preview-Y {
+  background-color: #c9b458;
+}
+
+.preview-Gr {
+  background-color: #6aaa64;
+}
 
 
 

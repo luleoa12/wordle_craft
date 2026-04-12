@@ -5,6 +5,8 @@ const CYCLE = ['gray', 'yellow', 'green'];
 let dragging = false;
 let dragColor = null;
 let undoStack = [];
+let redoStack = [];
+let cbMode = false;
 
 let state = {
   answer: '',
@@ -37,10 +39,50 @@ function initGrid() {
   renderGrid();
 }
 
+function updateToolbar() {
+  const undoBtn = document.getElementById('undoBtn');
+  const redoBtn = document.getElementById('redoBtn');
+  if (undoBtn) undoBtn.disabled = undoStack.length === 0;
+  if (redoBtn) redoBtn.disabled = redoStack.length === 0;
+}
+
 function saveUndo() {
   if (!state.grid) return;
-  undoStack.push(JSON.parse(JSON.stringify(state.grid)));
+  undoStack.push(JSON.stringify(state.grid));
   if (undoStack.length > 50) undoStack.shift();
+  redoStack = [];
+  updateToolbar();
+}
+
+function doUndo() {
+  if (!undoStack.length) return;
+  redoStack.push(JSON.stringify(state.grid));
+  const snap = undoStack.pop();
+  state.grid = JSON.parse(snap);
+  renderGrid();
+  updateToolbar();
+}
+
+function doRedo() {
+  if (!redoStack.length) return;
+  undoStack.push(JSON.stringify(state.grid));
+  const snap = redoStack.pop();
+  state.grid = JSON.parse(snap);
+  renderGrid();
+  updateToolbar();
+}
+
+function colorLabel(c) {
+  if (!cbMode) return '';
+  const labels = { gray: '■', yellow: '◆', green: '●' };
+  return labels[c] || '';
+}
+
+function toggleColorBlind() {
+  cbMode = !cbMode;
+  const toggle = document.getElementById('cbModeToggle');
+  if (toggle) toggle.checked = cbMode;
+  renderGrid();
 }
 
 function applyColor(r, c, color) {
@@ -54,13 +96,13 @@ function applyColor(r, c, color) {
   const tileEdit = document.getElementById(`tile-edit-${r}-${c}`);
   if (tileEdit) {
     tileEdit.className = `tile tile-${cell.color} tile-clicked`;
-    tileEdit.textContent = '';
+    tileEdit.textContent = colorLabel(cell.color);
   }
 
   const tilePrev = document.getElementById(`tile-prev-${r}-${c}`);
   if (tilePrev) {
     tilePrev.className = `tile tile-${cell.color} tile-clicked`;
-    tilePrev.textContent = '';
+    tilePrev.textContent = colorLabel(cell.color);
   }
 
   for (let i = 0; i < COLS; i++) {
@@ -70,7 +112,7 @@ function applyColor(r, c, color) {
   if (window._impossibleRows) {
     window._impossibleRows = window._impossibleRows.filter(row => row !== r);
   }
-  
+
   if (typeof clearToast === 'function') {
     clearToast('step2Toast');
   }
@@ -119,7 +161,7 @@ function getGridHTML(interactive) {
         }
       }
 
-      html += `<div id="tile-${interactive ? 'edit' : 'prev'}-${r}-${c}" class="${clsStr}" ${eventAttrs}></div>`;
+      html += `<div id="tile-${interactive ? 'edit' : 'prev'}-${r}-${c}" class="${clsStr}" ${eventAttrs}>${colorLabel(cell.color)}</div>`;
     }
     html += `</div></div>`;
   }
@@ -139,11 +181,11 @@ async function fetchTodaysWord() {
   try {
     const now = new Date();
     const isoLocal = now.getFullYear() + '-' +
-                     String(now.getMonth() + 1).padStart(2, '0') + '-' +
-                     String(now.getDate()).padStart(2, '0') + 'T' +
-                     String(now.getHours()).padStart(2, '0') + ':' +
-                     String(now.getMinutes()).padStart(2, '0') + ':' +
-                     String(now.getSeconds()).padStart(2, '0');
+      String(now.getMonth() + 1).padStart(2, '0') + '-' +
+      String(now.getDate()).padStart(2, '0') + 'T' +
+      String(now.getHours()).padStart(2, '0') + ':' +
+      String(now.getMinutes()).padStart(2, '0') + ':' +
+      String(now.getSeconds()).padStart(2, '0');
 
     const res = await fetch(`https://wordle-craft.luleoa12.workers.dev?datetime=${isoLocal}`);
     const data = await res.json();
@@ -310,6 +352,7 @@ function handleContinueAnyway() {
 }
 
 function resetGrid() {
+  saveUndo();
   initGrid();
   renderGrid();
   document.getElementById('step3').classList.add('disabled');
@@ -317,6 +360,7 @@ function resetGrid() {
 
 function shuffleColors(color1, color2) {
   if (!state.answer) { showToast('toastContainer', 'warn', 'Set target first.'); return; }
+  saveUndo();
 
   const positions1 = [];
   const positions2 = [];
@@ -396,6 +440,7 @@ function shuffleAll() {
 // Shuffle board with valid patterns
 function randomizeBoard() {
   if (!state.answer) { showToast('toastContainer', 'warn', 'Set target first.'); return; }
+  saveUndo();
   if (WORD_LIST.length === 0) { showToast('toastContainer', 'error', 'Word list not loaded yet.'); return; }
 
   const answer = state.answer.toUpperCase();
@@ -669,11 +714,11 @@ function updateShuffleUI() {
 }
 
 function shuffleTiles() {
-
   if (!state.answer) {
     showToast('toastContainer', 'warn', 'Set target first.');
     return;
   }
+  saveUndo();
 
   const shuffleGray = document.getElementById('shuffleGray').checked;
   const shuffleYellow = document.getElementById('shuffleYellow').checked;
@@ -971,6 +1016,7 @@ function renderExamplesGrid() {
 }
 
 function applyPremadePattern(idx) {
+  saveUndo();
   const p = PREMADE_PATTERNS[idx];
   if (!p) return;
 
@@ -991,6 +1037,13 @@ function applyPremadePattern(idx) {
 }
 
 document.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+    doUndo(); e.preventDefault(); return;
+  }
+  if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+    doRedo(); e.preventDefault(); return;
+  }
+
   if (e.key !== 'Tab') return;
 
   const openModalElement = Array.from(document.querySelectorAll('.modal-overlay'))
@@ -1020,6 +1073,7 @@ document.addEventListener('keydown', (e) => {
 window.addEventListener('DOMContentLoaded', () => {
   loadWordList();
   initGrid();
+  updateToolbar();
   const savedTheme = localStorage.getItem('wc_theme') || 'beige';
   setTheme(savedTheme);
 

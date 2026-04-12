@@ -10,6 +10,7 @@ let cbMode = false;
 
 let state = {
   answer: '',
+  answerType: '',
   grid: [],       // 6×5 of {letter, color}
   loading: false,
 };
@@ -61,6 +62,7 @@ function doUndo() {
   state.grid = JSON.parse(snap);
   renderGrid();
   updateToolbar();
+  saveSession();
 }
 
 function doRedo() {
@@ -70,6 +72,7 @@ function doRedo() {
   state.grid = JSON.parse(snap);
   renderGrid();
   updateToolbar();
+  saveSession();
 }
 
 function colorLabel(c) {
@@ -118,6 +121,7 @@ function applyColor(r, c, color) {
 
   const step3 = document.getElementById('step3');
   if (step3) step3.classList.add('disabled');
+  saveSession();
 }
 
 function tileDown(r, c, e) {
@@ -191,7 +195,7 @@ async function fetchTodaysWord() {
     const word = data.answer?.toUpperCase();
 
     if (word && /^[A-Z]{5}$/.test(word)) {
-      applyAnswer(word);
+      applyAnswer(word, 'fetched');
       showToast('toastContainer', 'ok', 'Word successfully fetched');
     } else {
       throw new Error('Word not found or invalid format. Override manually.');
@@ -218,10 +222,16 @@ function applyCustomWord() {
   applyAnswer(val);
 }
 
-function applyAnswer(word) {
-  state.answer = word.toUpperCase();
+function applyAnswer(word, type = 'custom') {
+  const newAnswer = word.toUpperCase();
+  if (state.answer && state.answer !== newAnswer) {
+    initGrid();
+  }
+  state.answer = newAnswer;
+  state.answerType = type;
   renderGrid();
   goToStep(2);
+  saveSession();
 }
 
 function scoreGuess(guessStr, answerStr) {
@@ -355,6 +365,7 @@ function resetGrid() {
   initGrid();
   renderGrid();
   document.getElementById('step3').classList.add('disabled');
+  saveSession();
 }
 
 function shuffleColors(color1, color2) {
@@ -414,6 +425,7 @@ function shuffleColors(color1, color2) {
   renderGrid();
   showToast('toastContainer', 'info', `Shuffled ${color1} and ${color2} tiles within their positions!`);
   document.getElementById('step3').classList.add('disabled');
+  saveSession();
 }
 
 function shuffleGrayYellow() {
@@ -485,6 +497,7 @@ function randomizeBoard() {
   renderGrid();
   showToast('toastContainer', 'info', 'Board randomly generated!');
   document.getElementById('step3').classList.add('disabled');
+  saveSession();
 }
 
 // Share 
@@ -657,6 +670,14 @@ function goToStep(n) {
       el.classList.add('disabled');
     }
   }
+  
+  if (n === 1) {
+    const customInput = document.getElementById('customWord');
+    if (customInput) {
+      customInput.value = '';
+      customInput.focus();
+    }
+  }
 }
 
 function openModal(id) {
@@ -784,6 +805,7 @@ function shuffleTiles() {
     renderGrid();
     showToast('toastContainer', 'info', 'Colors shuffled successfully!');
     document.getElementById('step3').classList.add('disabled');
+    saveSession();
   }, 50);
 }
 
@@ -1033,6 +1055,7 @@ function applyPremadePattern(idx) {
   closeModal('examplesModal');
   showToast('toastContainer', 'ok', `${p.name} pattern applied!`);
   document.getElementById('step3').classList.add('disabled');
+  saveSession();
 }
 
 document.addEventListener('keydown', (e) => {
@@ -1079,8 +1102,89 @@ window.addEventListener('DOMContentLoaded', () => {
   if (!localStorage.getItem('wc_intro_v4')) {
     openModal('introModal');
   }
+
+  checkSession();
 });
 
 document.addEventListener('mouseup', () => {
   dragging = false;
 });
+
+// --- Session Persistence ---
+function saveSession() {
+  if (state.answer || state.grid.some(row => row.some(cell => cell.color !== 'gray'))) {
+    localStorage.setItem('wc_session_state', JSON.stringify({
+      answer: state.answer,
+      answerType: state.answerType,
+      grid: state.grid
+    }));
+  } else {
+    localStorage.removeItem('wc_session_state');
+  }
+}
+
+function checkSession() {
+  const saved = localStorage.getItem('wc_session_state');
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      if (parsed.answer || parsed.grid.some(row => row.some(cell => cell.color !== 'gray'))) {
+        showRestoreToast(parsed);
+      }
+    } catch (e) {
+      localStorage.removeItem('wc_session_state');
+    }
+  }
+}
+
+function showRestoreToast(parsed) {
+  const container = document.getElementById('toastContainer');
+  if (!container) return;
+
+  const toast = document.createElement('div');
+  toast.className = `toast toast-info`;
+  toast.style.width = '100%';
+  toast.style.display = 'flex';
+  toast.style.justifyContent = 'space-between';
+  toast.style.alignItems = 'center';
+  toast.style.padding = '12px 16px';
+  toast.style.gap = '16px';
+
+  toast.innerHTML = `
+    <span style="font-size: 0.85rem; line-height: 1.2;">Restore your last session?</span>
+    <div style="display:flex; gap:8px;">
+      <button id="restoreBtn" class="btn btn-primary" style="height: 32px; font-size: 0.8rem; padding: 0 12px; min-height: unset;">Yes</button>
+      <button id="dismissRestoreBtn" class="btn btn-ghost" style="height: 32px; font-size: 0.8rem; padding: 0 12px; min-height: unset;">No</button>
+    </div>
+  `;
+
+  // Insert before other toasts
+  container.prepend(toast);
+
+  document.getElementById('restoreBtn').onclick = () => {
+    state.answer = parsed.answer;
+    state.answerType = parsed.answerType || 'custom';
+    state.grid = parsed.grid;
+    renderGrid();
+    if (state.answer) {
+      if (state.answerType === 'custom') {
+        const customInput = document.getElementById('customWord');
+        if (customInput) customInput.value = state.answer;
+        showToast('toastContainer', 'info', `Applied back your custom word: ${state.answer}`);
+      } else {
+        showToast('toastContainer', 'info', `Fetched today's word again: ${state.answer}`);
+      }
+      goToStep(2);
+    } else {
+      showToast('toastContainer', 'info', 'Restored previously painted tiles.');
+    }
+    toast.classList.add('fade-out');
+    setTimeout(() => toast.remove(), 400);
+  };
+
+  document.getElementById('dismissRestoreBtn').onclick = () => {
+    localStorage.removeItem('wc_session_state');
+    toast.classList.add('fade-out');
+    setTimeout(() => toast.remove(), 400);
+  };
+}

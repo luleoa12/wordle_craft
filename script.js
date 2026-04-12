@@ -158,7 +158,7 @@ function getGridHTML(interactive) {
       let eventAttrs = '';
       if (interactive) {
         if (state.answer) {
-          eventAttrs = `onmousedown="tileDown(${r}, ${c}, event)" onmouseenter="tileDrag(${r}, ${c})" oncontextmenu="tileCtx(${r}, ${c}, event)"`;
+          eventAttrs = `onmousedown="tileDown(${r}, ${c}, event)" onmouseenter="tileDrag(${r}, ${c})"`;
         } else {
           eventAttrs = `onmousedown="showToast('toastContainer', 'warn', 'Initialize payload first on Step 1!')"`;
         }
@@ -763,13 +763,13 @@ function clearToast(id) {
 }
 // Theme Switcher 
 const THEMES = {
-  beige: { bg: '#ece0c2', btn: '#d4a373', body: '#fdfaf5' },
-  blue: { bg: '#BAE6FD', btn: '#38bdf8', body: '#e0f2fe' },
-  green: { bg: '#BBF7D0', btn: '#4ade80', body: '#dcfce7' },
-  yellow: { bg: '#FEF08A', btn: '#facc15', body: '#fef9c3' },
-  orange: { bg: '#FED7AA', btn: '#fb923c', body: '#ffedd5' },
-  pink: { bg: '#FBCFE8', btn: '#f472b6', body: '#fce7f3' },
-  purple: { bg: '#E9D5FF', btn: '#c084fc', body: '#f3e8ff' },
+  beige: { bg: '#ece0c2', btn: '#d4a373', body: '#fdfaf5', icon: '#fff4e6' },
+  blue: { bg: '#BAE6FD', btn: '#38bdf8', body: '#e0f2fe', icon: '#f0f9ff' },
+  green: { bg: '#BBF7D0', btn: '#4ade80', body: '#dcfce7', icon: '#f0fdf4' },
+  yellow: { bg: '#FEF08A', btn: '#facc15', body: '#fef9c3', icon: '#fefce8' },
+  orange: { bg: '#FED7AA', btn: '#fb923c', body: '#ffedd5', icon: '#fff7ed' },
+  pink: { bg: '#FBCFE8', btn: '#f472b6', body: '#fce7f3', icon: '#fdf2f8' },
+  purple: { bg: '#E9D5FF', btn: '#c084fc', body: '#f3e8ff', icon: '#faf5ff' },
 };
 
 function setTheme(themeName) {
@@ -778,6 +778,7 @@ function setTheme(themeName) {
   root.style.setProperty('--bg-main', t.body);
   root.style.setProperty('--bg-panel', t.bg);
   root.style.setProperty('--accent-primary', t.btn);
+  root.style.setProperty('--bg-icon-tint', t.icon);
   localStorage.setItem('wc_theme', themeName);
 
   const swatches = document.querySelectorAll('.theme-swatch');

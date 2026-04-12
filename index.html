@@ -188,81 +188,86 @@
         <div class="grid-wrapper" style="display:flex; flex-direction:column; align-items:center; gap: 16px;">
           <div class="grid-builder" id="gridBuilder"></div>
         </div>
-
-        <div class="grid-legend mobile-hide">
-          <div class="legend-title" style="margin-top: 4px; margin-bottom: -2px;">Paint Guide
+        <div class="grid-sidebar mobile-hide">
+          <!-- Controls Section -->
+          <div class="sidebar-section">
+            <div class="sidebar-header">CONTROLS</div>
+            
+            <div class="sidebar-item">
+              <div class="sidebar-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+              </div>
+              <div class="sidebar-info">
+                <div class="sidebar-title">Click a tile</div>
+                <div class="sidebar-desc">Cycles through:&nbsp;&nbsp;&nbsp;
+                    gray → yellow → green</div>
+              </div>
+            </div>
+            
+            <div class="sidebar-divider"></div>
+            
+            <div class="sidebar-item">
+              <div class="sidebar-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8L22 12L18 16"></path><path d="M6 8L2 12L6 16"></path><line x1="2" y1="12" x2="22" y2="12"></line></svg>
+              </div>
+              <div class="sidebar-info">
+                <div class="sidebar-title">Drag across tiles</div>
+                <div class="sidebar-desc">Paint a run with the same color</div>
+              </div>
+            </div>
+            
+            <div class="sidebar-divider"></div>
+            
+            <div class="sidebar-item">
+              <div class="sidebar-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+              </div>
+              <div class="sidebar-info">
+                <div class="sidebar-title">Undo / Redo</div>
+                <div class="sidebar-shortcuts">
+                  <span class="keyboard-badge">Ctrl Z</span>
+                  <span class="keyboard-badge">Ctrl Y</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div class="legend-items">
-            <div class="legend-row">
-              <div class="color-swatch" style="background: #787c7e;"></div>
-              <span class="legend-label">Gray</span>
-            </div>
-            <div class="legend-row">
-              <div class="color-swatch" style="background: #c9b458;"></div>
-              <span class="legend-label">Yellow</span>
-            </div>
-            <div class="legend-row">
-              <div class="color-swatch" style="background: #6aaa64;"></div>
-              <span class="legend-label">Green</span>
-            </div>
-          </div>
-
-          <div class="legend-divider"></div>
-
-          <div class="legend-title" style="margin-top: 2px; margin-bottom: -2px;">Instructions
-          </div>
-
-          <div class="instruction-list">
-            <div class="instruction-item">
-              <div class="instruction-header">
-                <div class="instruction-icon">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="3" width="7" height="7"></rect>
-                    <rect x="14" y="3" width="7" height="7"></rect>
-                    <rect x="14" y="14" width="7" height="7"></rect>
-                    <rect x="3" y="14" width="7" height="7"></rect>
-                  </svg>
-                </div>
-                <div class="instruction-title">Click a tile</div>
+          <!-- Actions Section -->
+          <div class="sidebar-section">
+            <div class="sidebar-header">ACTIONS</div>
+            
+            <div class="sidebar-item sidebar-clickable" onclick="openShuffleModal()">
+              <div class="sidebar-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
               </div>
-              <div class="instruction-desc">
-                <span>Rotates color: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                <span>gray → yellow → green</span>
+              <div class="sidebar-info">
+                <div class="sidebar-title">Shuffle</div>
+                <div class="sidebar-desc">Randomize the board pattern</div>
               </div>
             </div>
-
-            <div class="instruction-item">
-              <div class="instruction-header">
-                <div class="instruction-icon">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M16 3h5v5"></path>
-                    <path d="M4 20L21 3"></path>
-                    <path d="M21 16v5h-5"></path>
-                    <path d="M15 15l6 6"></path>
-                    <path d="M4 4l5 5"></path>
-                  </svg>
-                </div>
-                <div class="instruction-title">Shuffle</div>
+            
+            <div class="sidebar-divider"></div>
+            
+            <div class="sidebar-item sidebar-clickable" onclick="resetGrid()">
+              <div class="sidebar-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path><line x1="12" y1="7" x2="12" y2="12"></line><line x1="12" y1="12" x2="16" y2="14"></line></svg>
               </div>
-              <div class="instruction-desc">Randomize board patterns with custom controls</div>
+              <div class="sidebar-info">
+                <div class="sidebar-title">Reset tiles</div>
+                <div class="sidebar-desc">Clears all colors back to gray</div>
+              </div>
             </div>
-
-            <div class="instruction-item">
-              <div class="instruction-header">
-                <div class="instruction-icon">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
-                    stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
-                    <path d="M3 3v5h5"></path>
-                    <path d="M12 7v5l4 2"></path>
-                  </svg>
-                </div>
-                <div class="instruction-title">Reset tiles</div>
+            
+            <div class="sidebar-divider"></div>
+            
+            <div class="sidebar-item sidebar-clickable" onclick="openExamplesModal()">
+              <div class="sidebar-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
               </div>
-              <div class="instruction-desc">Clears all colors back to gray</div>
+              <div class="sidebar-info">
+                <div class="sidebar-title">Examples</div>
+                <div class="sidebar-desc">Browse premade patterns</div>
+              </div>
             </div>
           </div>
         </div>

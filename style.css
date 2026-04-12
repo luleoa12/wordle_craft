@@ -1269,7 +1269,7 @@ body.modal-open {
   position: relative;
 }
 
-.github-btn {
+.github-btn, .coffee-btn {
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -1286,19 +1286,19 @@ body.modal-open {
   position: relative;
 }
 
-.github-btn svg {
+.github-btn svg, .coffee-btn svg {
   width: 16px;
   height: 16px;
   transform: translateY(-0.5px);
 }
 
-.github-btn:hover {
+.github-btn:hover, .coffee-btn:hover {
   transform: translate(1px, 1px);
   box-shadow: 2px 2px 0px var(--border-main);
   background: var(--bg-main);
 }
 
-.github-btn:active {
+.github-btn:active, .coffee-btn:active {
   transform: translate(2px, 2px);
   box-shadow: 1px 1px 0px var(--border-main);
 }
@@ -1340,6 +1340,8 @@ body.modal-open {
 .github-container {
   position: relative;
   margin-right: 4px;
+  display: flex;
+  gap: 12px;
 }
 
 .section-header {

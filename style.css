@@ -1367,6 +1367,7 @@ body.modal-open {
 
 .section-header {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   gap: 16px;
   margin-bottom: 12px;
@@ -1408,16 +1409,41 @@ body.modal-open {
 
 .step-footer {
   display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  margin-top: 24px;
-  gap: 16px;
+  justify-content: center;
+  margin-top: 32px;
+  width: 100%;
 }
 
 .step-footer-actions {
   display: flex;
   gap: 12px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.step-footer-actions .btn {
+  flex: 0 1 auto;
+  white-space: nowrap;
+  padding: 0 12px;
+  min-width: 0;
+  font-size: 0.95rem;
+}
+
+.step-footer-actions .btn svg {
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .step-footer-actions {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  
+  .step-footer-actions .btn {
+    width: calc(50% - 6px);
+    flex: none;
+  }
 }
 
 .modal-super-title {

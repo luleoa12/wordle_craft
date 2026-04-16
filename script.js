@@ -709,6 +709,111 @@ async function generateLinkShare() {
   }
 }
 
+async function exportAsImage(e) {
+  const grid = document.getElementById('gridBuilder');
+  // Use the clicked button if available, otherwise fallback to the footer one
+  const btn = (e && e.currentTarget) ? e.currentTarget : document.getElementById('exportBtn');
+  if (!grid || !btn) return;
+  
+  if (typeof html2canvas === 'undefined') {
+    showToast('toastContainer', 'error', 'Exporting is currently unavailable.');
+    return;
+  }
+
+  const originalBtnText = btn.innerHTML;
+  btn.innerHTML = '<span class="spinner"></span> Generating...';
+  btn.disabled = true;
+
+  try {
+    // Create a temporary container for the export to ensure it's beautifully framed
+    const container = document.createElement('div');
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+    container.style.top = '0';
+    container.style.padding = '48px';
+    container.style.backgroundColor = getComputedStyle(document.body).backgroundColor;
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
+    container.style.alignItems = 'center';
+    container.style.justifyContent = 'center';
+    container.style.gap = '32px';
+    container.style.border = '4px solid #141414';
+    container.style.borderRadius = '24px';
+    container.style.boxShadow = '12px 12px 0px rgba(0,0,0,0.1)';
+
+    // Brand Header
+    const brand = document.createElement('div');
+    brand.style.display = 'flex';
+    brand.style.flexDirection = 'column';
+    brand.style.alignItems = 'center';
+    brand.style.gap = '4px';
+
+    const title = document.createElement('div');
+    title.textContent = 'WORDLE CRAFT';
+    title.style.fontFamily = "Lexend, sans-serif";
+    title.style.fontSize = '32px';
+    title.style.fontWeight = '900';
+    title.style.letterSpacing = '-1px';
+    title.style.color = '#141414';
+    brand.appendChild(title);
+
+    const subtitle = document.createElement('div');
+    subtitle.textContent = state.answer ? `Target: ${state.answer}` : 'Custom Pattern';
+    subtitle.style.fontFamily = "'Space Mono', monospace";
+    subtitle.style.fontSize = '14px';
+    subtitle.style.fontWeight = '700';
+    subtitle.style.color = '#6b6b6b';
+    brand.appendChild(subtitle);
+
+    container.appendChild(brand);
+
+    // Grid Clone
+    const gridClone = grid.cloneNode(true);
+    gridClone.style.transform = 'none';
+    gridClone.style.margin = '0';
+    gridClone.style.padding = '0';
+    container.appendChild(gridClone);
+
+    // URL Footer
+    const footer = document.createElement('div');
+    footer.textContent = 'wordlecraft.com';
+    footer.style.fontFamily = "'Space Mono', monospace";
+    footer.style.fontSize = '12px';
+    footer.style.fontWeight = '700';
+    footer.style.color = '#141414';
+    footer.style.opacity = '0.5';
+    container.appendChild(footer);
+
+    document.body.appendChild(container);
+
+    // Wait a tiny bit for any layout shifts
+    await new Promise(r => setTimeout(r, 50));
+
+    const canvas = await html2canvas(container, {
+      scale: 2, // High resolution for sharing
+      backgroundColor: null,
+      logging: false,
+      useCORS: true,
+      allowTaint: true
+    });
+
+    document.body.removeChild(container);
+
+    const link = document.createElement('a');
+    link.download = `wordle-craft-${state.answer || 'pattern'}.png`.toLowerCase();
+    link.href = canvas.toDataURL('image/png', 1.0);
+    link.click();
+    
+    showToast('toastContainer', 'ok', 'Board exported as PNG!');
+  } catch (err) {
+    console.error('[Export] Fail:', err);
+    showToast('toastContainer', 'error', 'Failed to export image.');
+  } finally {
+    btn.innerHTML = originalBtnText;
+    btn.disabled = false;
+  }
+}
+
 function loadFromHash(hash) {
   const data = decryptShare(hash);
   if (!data) {
